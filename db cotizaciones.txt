@@ -1,0 +1,66 @@
+CREATE DATABASE IF NOT EXISTS cotizaciones;
+USE cotizaciones;
+
+CREATE TABLE IF NOT EXISTS clientes (
+  id VARCHAR(30) NOT NULL,        -- cédula
+  nombre VARCHAR(150) NOT NULL,
+  telefono VARCHAR(50),
+  municipio VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    precio_costo DECIMAL(10,2) NOT NULL,
+    precio_venta DECIMAL(10,2) NOT NULL,
+    iva ENUM('0%', '5%', '19%') NOT NULL,
+    embalaje ENUM('Frasco', 'Galón', 'Bolsa') NOT NULL,
+    stock INT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin','user') DEFAULT 'user'
+);
+
+const bcrypt = require("bcrypt");
+const db = require("./db");
+
+(async () => {
+    const hashedPassword = await bcrypt.hash("123456", 10);
+    db.query(
+        "INSERT INTO usuarios (username, password, role) VALUES (?, ?, ?)",
+        ["admin", hashedPassword, "admin"],
+        (err) => {
+            if (err) console.error(err);
+            else console.log("Usuario creado");
+            process.exit();
+        }
+    );
+})();
+
+
+CREATE TABLE cotizaciones (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    numero_cotizacion VARCHAR(20) NOT NULL,
+    fecha DATE NOT NULL,
+    cliente_id VARCHAR(30) NOT NULL,
+    tipo ENUM('credito', 'contado') NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+);
+
+-- Tabla de detalles de cotizaciones
+CREATE TABLE cotizacion_detalles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    cotizacion_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio_venta DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(id),
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
+);
