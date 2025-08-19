@@ -35,17 +35,28 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Obtener todas las cotizaciones (con opción de filtrar por fechas)
+router.get('/Numero', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT MAX(numero_cotizacion) AS mayor_numero FROM cotizaciones;'
+    );
+    res.json(rows[0]); // 👈 devuelve solo el objeto, no el array
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Obtener todas las cotizaciones (con opción de filtrar)
 router.get('/', async (req, res) => {
     try {
-        const { desde, hasta } = req.query;
+        const { desde, hasta, cliente, numero, tipo } = req.query;
 
         let query = `
-            SELECT 
+            SELECT
                 c.id,
-                c.numero_cotizacion,
                 c.fecha,
                 c.tipo,
+                c.numero_cotizacion,
                 cli.nombre AS cliente,
                 c.subtotal
             FROM cotizaciones c
@@ -54,13 +65,31 @@ router.get('/', async (req, res) => {
         `;
         const params = [];
 
-        // Si se pasan fechas, agregamos condición
+        // Filtro por rango de fechas
         if (desde && hasta) {
             query += " AND DATE(c.fecha) BETWEEN ? AND ? ";
             params.push(desde, hasta);
         }
 
-        query += " ORDER BY c.id DESC";
+        // Filtro por nombre del cliente
+        if (cliente) {
+            query += " AND cli.nombre LIKE ? ";
+            params.push(`%${cliente}%`);
+        }
+
+        // Filtro por número de cotización
+        if (numero) {
+            query += " AND c.numero_cotizacion LIKE ? ";
+            params.push(`%${numero}%`);
+        }
+
+        // Filtro por tipo (contado / credito)
+        if (tipo) {
+            query += " AND c.tipo = ? ";
+            params.push(tipo);
+        }
+
+        query += " ORDER BY c.id ASC";
 
         const [rows] = await pool.query(query, params);
         res.json(rows);
@@ -69,7 +98,6 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 
 // Eliminar cotización
 router.delete('/:id', async (req, res) => {
@@ -144,6 +172,20 @@ router.put('/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// GET: Cotizaciones con saldo por cliente
+router.get("/cliente/:clienteId", async (req, res) => {
+  const { clienteId } = req.params;
+  try {
+    const [rows] = await pool.query(
+      "SELECT id, numero_cotizacion, fecha, saldo FROM cotizaciones WHERE cliente_id = ? AND saldo > 0 AND tipo = 'credito'",
+      [clienteId]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener cotizaciones del cliente" });
+  }
 });
 
 module.exports = router;

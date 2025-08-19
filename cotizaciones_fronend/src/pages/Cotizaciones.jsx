@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Select from "react-select";
 export default function Cotizaciones() {
     const [fecha, setFecha] = useState("");
     const [numeroCotizacion, setNumeroCotizacion] = useState("");
@@ -15,12 +15,35 @@ export default function Cotizaciones() {
     useEffect(() => {
         axios.get("http://localhost:4000/api/clientes").then(res => setClientes(res.data));
         axios.get("http://localhost:4000/api/productos").then(res => setProductos(res.data));
+        axios.get("http://localhost:4000/api/cotizaciones/Numero").then(res => {
+            const numero = parseInt(res.data.mayor_numero) || 0;
+            setNumeroCotizacion(numero + 1);
+        }
+        )
     }, []);
 
-    const agregarProducto = (producto) => {
-        setProductosSeleccionados([...productosSeleccionados, { ...producto, cantidad: 1 }]);
-    };
+    const agregarProducto = (opcion) => {
+        if (!opcion) return;
 
+        // Buscar el producto real (para tener precio y demás)
+        const producto = productos.find(p => p.id === opcion.value);
+
+        // Evitar duplicados
+        if (productosSeleccionados.some(p => p.id === producto.id)) {
+            alert("Este producto ya fue agregado");
+            return;
+        }
+
+        setProductosSeleccionados([
+            ...productosSeleccionados,
+            {
+                id: producto.id,
+                nombre: producto.nombre,
+                precio_venta: producto.precio_venta,
+                cantidad: 1,
+            },
+        ]);
+    };
     const actualizarProducto = (index, campo, valor) => {
         const nuevos = [...productosSeleccionados];
         nuevos[index][campo] = valor;
@@ -67,7 +90,7 @@ export default function Cotizaciones() {
     const eliminarProducto = (index) => {
         setProductosSeleccionados(productosSeleccionados.filter((_, i) => i !== index));
     };
-    
+
     return (
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-4 border-b pb-2" > 📝Nueva Cotización</h2>
@@ -108,47 +131,15 @@ export default function Cotizaciones() {
 
             <h3 className="text-lg font-semibold mt-4 mb-2">Productos</h3>
 
-            {/* Buscador */}
-            <input
-                type="text"
-                placeholder="Buscar producto..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                className="border p-2 rounded-md w-full mb-3"
+            {/* 🔽 Selector con búsqueda */}
+            <Select
+                options={productos.map(p => ({
+                    value: p.id,
+                    label: `${p.nombre} - $${p.precio_venta}`,
+                }))}
+                onChange={agregarProducto}
+                placeholder="🔍 Buscar producto..."
             />
-
-            {/* Lista filtrada */}
-            <div className="border p-3 rounded-md max-h-60 overflow-y-auto">
-                {productos
-                    .filter(p =>
-                        p.nombre.toLowerCase().includes(busqueda.toLowerCase())
-                    )
-                    .map(p => (
-                        <div
-                            key={p.id}
-                            className="flex items-center justify-between border-b py-2"
-                        >
-                            <span>
-                                {p.nombre} - <strong>
-                                    {new Intl.NumberFormat("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                        minimumFractionDigits: 0,
-                                    }).format(p.precio_venta)}
-                                </strong>
-
-                            </span>
-                            <button
-                                onClick={() => agregarProducto(p)}
-                                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                            >
-                                Agregar
-                            </button>
-                        </div>
-                    ))
-                }
-            </div>
-
 
             <h3 className="text-lg font-semibold mt-4">Detalle Cotización</h3>
             <div className="overflow-x-auto mt-2">

@@ -19,6 +19,13 @@ app.use("/api/auth", authRoutes);
 const cotizacionesRoutes = require("./routes/cotizaciones");
 app.use("/api/cotizaciones", cotizacionesRoutes);
 
+
+const reportesRoutes = require("./routes/reportes");
+app.use("/api/reportes", reportesRoutes);
+
+const recibosRoutes = require("./routes/recibos");
+app.use("/api/recibos", recibosRoutes);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`API de clientes escuchando en http://localhost:${PORT}`);

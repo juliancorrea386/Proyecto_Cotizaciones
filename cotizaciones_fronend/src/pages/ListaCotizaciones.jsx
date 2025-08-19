@@ -8,6 +8,9 @@ export default function ListaCotizaciones() {
     const [cotizaciones, setCotizaciones] = useState([]);
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
+    const [cliente, setCliente] = useState("");
+    const [numeroCotizacion, setNumeroCotizacion] = useState("");
+    const [tipo, setTipo] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,15 +46,24 @@ export default function ListaCotizaciones() {
         }
     };
 
-    const filtrarPorFechas = () => {
-        if (!fechaInicio || !fechaFin) {
-            toast.warning("Selecciona ambas fechas", {
-                position: "top-center",
-                autoClose: 2000,
-            });
-            return;
-        }
-        fetchCotizaciones({ desde: fechaInicio, hasta: fechaFin });
+    const aplicarFiltros = () => {
+        const params = {};
+        if (fechaInicio) params.desde = fechaInicio;
+        if (fechaFin) params.hasta = fechaFin;
+        if (cliente) params.cliente = cliente;
+        if (numeroCotizacion) params.numero = numeroCotizacion;
+        if (tipo) params.tipo = tipo;
+
+        fetchCotizaciones(params);
+    };
+
+    const limpiarFiltros = () => {
+        setFechaInicio("");
+        setFechaFin("");
+        setCliente("");
+        setNumeroCotizacion("");
+        setTipo("");
+        fetchCotizaciones(); // recargar todas
     };
 
     return (
@@ -59,8 +71,8 @@ export default function ListaCotizaciones() {
             <h2 className="text-xl font-bold mb-4">📄 Lista de Cotizaciones</h2>
             <ToastContainer />
 
-            {/* Filtros de fecha */}
-            <div className="bg-white p-4 rounded-lg shadow mb-4 flex gap-4 items-end">
+            {/* Filtros */}
+            <div className="bg-white p-4 rounded-lg shadow mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                 <div>
                     <label className="block text-gray-700">Desde:</label>
                     <input
@@ -79,24 +91,55 @@ export default function ListaCotizaciones() {
                         className="border px-3 py-2 rounded w-full"
                     />
                 </div>
-                <button
-                    onClick={filtrarPorFechas}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"
-                >
-                    🔍 Filtrar
-                </button>
-                <button
-                    onClick={() => {
-                        setFechaInicio("");
-                        setFechaFin("");
-                        fetchCotizaciones(); // recargar todas
-                    }}
-                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow"
-                >
-                    ❌ Limpiar
-                </button>
+                <div>
+                    <label className="block text-gray-700">Cliente:</label>
+                    <input
+                        type="text"
+                        placeholder="Nombre cliente"
+                        value={cliente}
+                        onChange={(e) => setCliente(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">N° Cotización:</label>
+                    <input
+                        type="text"
+                        placeholder="Ej: 1025"
+                        value={numeroCotizacion}
+                        onChange={(e) => setNumeroCotizacion(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Tipo:</label>
+                    <select
+                        value={tipo}
+                        onChange={(e) => setTipo(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    >
+                        <option value="">-- Todos --</option>
+                        <option value="contado">Contado</option>
+                        <option value="credito">Crédito</option>
+                    </select>
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={aplicarFiltros}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        🔍 Filtrar
+                    </button>
+                    <button
+                        onClick={limpiarFiltros}
+                        className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        ❌ Limpiar
+                    </button>
+                </div>
             </div>
 
+            {/* Tabla */}
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="w-full border-collapse bg-white">
                     <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
@@ -125,7 +168,6 @@ export default function ListaCotizaciones() {
                                             year: "numeric",
                                         })}
                                     </td>
-
                                     <td className="p-3 text-left font-semibold">
                                         {new Intl.NumberFormat("es-CO", {
                                             style: "currency",
@@ -133,13 +175,10 @@ export default function ListaCotizaciones() {
                                             minimumFractionDigits: 0,
                                         }).format(c.subtotal)}
                                     </td>
-
                                     <td className="p-3 text-center font-semibold">{c.tipo}</td>
                                     <td className="p-3 text-center space-x-2">
                                         <button
-                                            onClick={() =>
-                                                navigate(`/editar-cotizacion/${c.id}`)
-                                            }
+                                            onClick={() => navigate(`/editar-cotizacion/${c.id}`)}
                                             className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition"
                                         >
                                             ✏️ Editar
@@ -155,33 +194,36 @@ export default function ListaCotizaciones() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="5" className="text-center p-4 text-gray-500">
+                                <td colSpan="6" className="text-center p-4 text-gray-500">
                                     No hay cotizaciones para mostrar
                                 </td>
                             </tr>
                         )}
                     </tbody>
+                    {/* Pie de tabla con el total */}
+                    {cotizaciones.length > 0 && (
+                        <tfoot className="bg-gray-100 font-bold">
+                            <tr>
+                                <td colSpan="3" className="p-3 text-right">
+                                    TOTAL GENERAL:
+                                </td>
+                                <td className="p-3 text-right">
+                                    {new Intl.NumberFormat("es-CO", {
+                                        style: "currency",
+                                        currency: "COP",
+                                        minimumFractionDigits: 0,
+                                    }).format(
+                                        cotizaciones.reduce(
+                                            (sum, c) => sum + (Number(c.subtotal) || 0),
+                                            0
+                                        )
+                                    )}
+                                </td>
+                                <td colSpan="2"></td>
+                            </tr>
+                        </tfoot>
+                    )}
                 </table>
-                {/* Pie de tabla con el total */}
-                {cotizaciones.length > 0 && (
-                    <tfoot className="bg-gray-100 font-bold">
-                        <tr>
-                            <td colSpan="3" className="p-3 text-right">
-                                TOTAL GENERAL:
-                            </td>
-                            <td className="p-3 text-right">
-                                {new Intl.NumberFormat("es-CO", {
-                                    style: "currency",
-                                    currency: "COP",
-                                    minimumFractionDigits: 0,
-                                }).format(
-                                    cotizaciones.reduce((sum, c) => sum + (Number(c.subtotal) || 0), 0)
-                                )}
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                )}
             </div>
         </div>
     );

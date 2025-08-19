@@ -64,3 +64,23 @@ CREATE TABLE cotizacion_detalles (
     FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(id),
     FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
+
+ALTER TABLE cotizaciones
+ADD COLUMN tipo_pago ENUM('contado','credito') DEFAULT 'contado',
+ADD COLUMN total DECIMAL(10,2) NOT NULL DEFAULT 0,
+ADD COLUMN saldo DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+CREATE TABLE recibos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fecha DATE NOT NULL,
+  observacion TEXT
+);
+CREATE TABLE recibo_detalles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recibo_id INT NOT NULL,
+  cotizacion_id INT NOT NULL,
+  valor DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (recibo_id) REFERENCES recibos(id),
+  FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(id)
+);
+
