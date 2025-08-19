@@ -30,26 +30,44 @@ export default function Cotizaciones() {
     const subtotal = productosSeleccionados.reduce((acc, p) => acc + (p.precio_venta * p.cantidad), 0);
 
     const guardarCotizacion = async () => {
-        await axios.post("http://localhost:4000/api/cotizaciones", {
-            numero_cotizacion: numeroCotizacion,
-            fecha,
-            cliente_id: clienteId,
-            tipo,
-            productos: productosSeleccionados
-        });
-        toast.success("Cotización guardada con éxito", {
-            position: "top-center",
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored"
-        });
+        try {
+            await axios.post("http://localhost:4000/api/cotizaciones", {
+                numero_cotizacion: numeroCotizacion,
+                fecha,
+                cliente_id: clienteId,
+                tipo,
+                productos: productosSeleccionados
+            });
+
+            toast.success("Cotización guardada con éxito", {
+                position: "top-center",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored"
+            });
+
+            // 🔹 Limpiar todos los campos después de guardar
+            setFecha("");
+            setNumeroCotizacion("");
+            setClienteId("");
+            setTipo("contado");
+            setBusqueda("");
+            setProductosSeleccionados([]);
+        } catch (error) {
+            toast.error("Error al guardar la cotización", {
+                position: "top-center"
+            });
+            console.error(error);
+        }
     };
+
     const eliminarProducto = (index) => {
         setProductosSeleccionados(productosSeleccionados.filter((_, i) => i !== index));
     };
+    
     return (
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-4 border-b pb-2" > 📝Nueva Cotización</h2>

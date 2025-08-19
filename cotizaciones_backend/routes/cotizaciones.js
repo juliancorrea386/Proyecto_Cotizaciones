@@ -45,6 +45,7 @@ router.get('/', async (req, res) => {
                 c.id,
                 c.numero_cotizacion,
                 c.fecha,
+                c.tipo,
                 cli.nombre AS cliente,
                 c.subtotal
             FROM cotizaciones c

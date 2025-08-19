@@ -104,7 +104,8 @@ export default function ListaCotizaciones() {
                             <th className="p-3 text-left">N° Cotización</th>
                             <th className="p-3 text-left">Cliente</th>
                             <th className="p-3 text-left">Fecha</th>
-                            <th className="p-3 text-right">Total</th>
+                            <th className="p-3 text-left">Total</th>
+                            <th className="p-3 text-left">Tipo</th>
                             <th className="p-3 text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -125,13 +126,15 @@ export default function ListaCotizaciones() {
                                         })}
                                     </td>
 
-                                    <td className="p-3 text-right font-semibold">
+                                    <td className="p-3 text-left font-semibold">
                                         {new Intl.NumberFormat("es-CO", {
                                             style: "currency",
                                             currency: "COP",
                                             minimumFractionDigits: 0,
                                         }).format(c.subtotal)}
                                     </td>
+
+                                    <td className="p-3 text-center font-semibold">{c.tipo}</td>
                                     <td className="p-3 text-center space-x-2">
                                         <button
                                             onClick={() =>
@@ -152,13 +155,33 @@ export default function ListaCotizaciones() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4" className="text-center p-4 text-gray-500">
+                                <td colSpan="5" className="text-center p-4 text-gray-500">
                                     No hay cotizaciones para mostrar
                                 </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
+                {/* Pie de tabla con el total */}
+                {cotizaciones.length > 0 && (
+                    <tfoot className="bg-gray-100 font-bold">
+                        <tr>
+                            <td colSpan="3" className="p-3 text-right">
+                                TOTAL GENERAL:
+                            </td>
+                            <td className="p-3 text-right">
+                                {new Intl.NumberFormat("es-CO", {
+                                    style: "currency",
+                                    currency: "COP",
+                                    minimumFractionDigits: 0,
+                                }).format(
+                                    cotizaciones.reduce((sum, c) => sum + (Number(c.subtotal) || 0), 0)
+                                )}
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                )}
             </div>
         </div>
     );
