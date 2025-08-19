@@ -111,7 +111,14 @@ export default function Cotizaciones() {
                             className="flex items-center justify-between border-b py-2"
                         >
                             <span>
-                                {p.nombre} - <strong>${p.precio_venta}</strong>
+                                {p.nombre} - <strong>
+                                    {new Intl.NumberFormat("es-CO", {
+                                        style: "currency",
+                                        currency: "COP",
+                                        minimumFractionDigits: 0,
+                                    }).format(p.precio_venta)}
+                                </strong>
+
                             </span>
                             <button
                                 onClick={() => agregarProducto(p)}
@@ -146,10 +153,17 @@ export default function Cotizaciones() {
                                 <td className="p-3">{p.nombre}</td>
                                 <td className="p-3 text-center">
                                     <input
-                                        type="number"
-                                        value={p.precio_venta}
-                                        onChange={e => actualizarProducto(i, "precio_venta", parseFloat(e.target.value))}
-                                        className="w-20 border rounded px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        type="text"
+                                        value={new Intl.NumberFormat("es-CO", {
+                                            style: "currency",
+                                            currency: "COP",
+                                            minimumFractionDigits: 0,
+                                        }).format(p.precio_venta)}
+                                        onChange={e => {
+                                            const raw = e.target.value.replace(/[^0-9]/g, ""); // deja solo números
+                                            actualizarProducto(i, "precio_venta", parseInt(raw) || 0);
+                                        }}
+                                        className="w-32 border rounded px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
                                     />
                                 </td>
                                 <td className="p-3 text-center">
@@ -161,7 +175,11 @@ export default function Cotizaciones() {
                                     />
                                 </td>
                                 <td className="p-3 text-center font-semibold text-gray-700">
-                                    {(p.precio_venta * p.cantidad).toFixed(2)}
+                                    {new Intl.NumberFormat("es-CO", {
+                                        style: "currency",
+                                        currency: "COP",
+                                        minimumFractionDigits: 0,
+                                    }).format(p.precio_venta * p.cantidad)}
                                 </td>
                                 <td className="p-3 text-center">
                                     <button
@@ -179,7 +197,11 @@ export default function Cotizaciones() {
 
 
             <div className="flex justify-between items-center mt-4">
-                <h3 className="text-lg font-bold">Subtotal: ${subtotal.toFixed(2)}</h3>
+                <h3 className="text-lg font-bold">Subtotal: {new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0,
+                }).format(subtotal)}</h3>
                 <button
                     onClick={guardarCotizacion}
                     className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"

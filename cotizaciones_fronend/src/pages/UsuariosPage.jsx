@@ -26,7 +26,6 @@ export default function UsuariosPage() {
     };
 
     const handleEdit = (usuario) => {
-        console.log("Editar usuario:", usuario);
         setUsuarioSeleccionado(usuario); // Editar existente
         setShowForm(true);
     };
@@ -65,7 +64,7 @@ export default function UsuariosPage() {
                 onClick={handleCreate}
                 className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
             >
-                Nuevo Cliente
+                Nuevo Usuario
             </button>
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="w-full border-collapse bg-white">

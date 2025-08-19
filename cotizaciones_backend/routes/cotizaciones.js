@@ -35,24 +35,40 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Obtener todas las cotizaciones
+// Obtener todas las cotizaciones (con opción de filtrar por fechas)
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await pool.query(`
+        const { desde, hasta } = req.query;
+
+        let query = `
             SELECT 
                 c.id,
                 c.numero_cotizacion,
+                c.fecha,
                 cli.nombre AS cliente,
                 c.subtotal
             FROM cotizaciones c
             JOIN clientes cli ON c.cliente_id = cli.id
-            ORDER BY c.id DESC
-        `);
+            WHERE 1=1
+        `;
+        const params = [];
+
+        // Si se pasan fechas, agregamos condición
+        if (desde && hasta) {
+            query += " AND DATE(c.fecha) BETWEEN ? AND ? ";
+            params.push(desde, hasta);
+        }
+
+        query += " ORDER BY c.id DESC";
+
+        const [rows] = await pool.query(query, params);
         res.json(rows);
     } catch (error) {
+        console.error("Error al obtener cotizaciones:", error);
         res.status(500).json({ error: error.message });
     }
 });
+
 
 // Eliminar cotización
 router.delete('/:id', async (req, res) => {

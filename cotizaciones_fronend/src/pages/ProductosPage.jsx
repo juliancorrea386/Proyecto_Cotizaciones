@@ -65,7 +65,7 @@ export default function Productos() {
   return (
     <div className="mt-6">
       <h1 className="text-xl font-bold mb-4">Lista de Productos</h1>
-      
+
       <button
         onClick={handleCreate}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
@@ -73,58 +73,66 @@ export default function Productos() {
         Nuevo Producto
       </button>
       <div className="overflow-x-auto shadow-md rounded-lg">
-      <table className="w-full border-collapse bg-white">
-        <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-          <tr >
-            <th className="border p-2">Nombre</th>
-            <th className="border p-2">Precio Costo</th>
-            <th className="border p-2">Precio Venta</th>
-            <th className="border p-2">IVA</th>
-            <th className="border p-2">Embalaje</th>
-            <th className="border p-2">Stock</th>
-            <th className="border p-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productos.length > 0 ? (
-            productos.map((producto) => (
-              <tr key={producto.id}>
-                <td className="border p-2">{producto.nombre}</td>
-                <td className="border p-2">{producto.precio_costo}</td>
-                <td className="border p-2">{producto.precio_venta}</td>
-                <td className="border p-2">{producto.iva}</td>
-                <td className="border p-2">{producto.embalaje}</td>
-                <td className="border p-2">{producto.stock}</td>
-                <td className="border p-2 flex gap-2">
-                  <button
-                    onClick={() => handleEdit(producto)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition"
-                  >
-                    ✏️ Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(producto.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition"
-                  >
-                    ❌ Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No hay productos</td>
+        <table className="w-full border-collapse bg-white">
+          <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <tr >
+              <th className="border p-2">Nombre</th>
+              <th className="border p-2">Precio Costo</th>
+              <th className="border p-2">Precio Venta</th>
+              <th className="border p-2">IVA</th>
+              <th className="border p-2">Embalaje</th>
+              <th className="border p-2">Stock</th>
+              <th className="border p-2">Acciones</th>
             </tr>
-          )}
-        </tbody>
-      </table>
-      {showForm && (
-        <ProductoForm
-          producto={productoSeleccionado} // Ahora sí se pasa el cliente correcto
-          onSave={guardarProducto}
-          onClose={cerrarModal}
-        />
-      )}
+          </thead>
+          <tbody>
+            {productos.length > 0 ? (
+              productos.map((producto) => (
+                <tr key={producto.id}>
+                  <td className="border p-2">{producto.nombre}</td>
+                  <td className="border p-2">{new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0,
+                  }).format(producto.precio_costo)}</td>
+                  <td className="border p-2">{new Intl.NumberFormat("es-CO", {
+                    style: "currency",
+                    currency: "COP",
+                    minimumFractionDigits: 0,
+                  }).format(producto.precio_venta)}</td>
+                  <td className="border p-2">{producto.iva}</td>
+                  <td className="border p-2">{producto.embalaje}</td>
+                  <td className="border p-2">{producto.stock}</td>
+                  <td className="border p-2 flex gap-2">
+                    <button
+                      onClick={() => handleEdit(producto)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition"
+                    >
+                      ✏️ Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(producto.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition"
+                    >
+                      ❌ Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6">No hay productos</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {showForm && (
+          <ProductoForm
+            producto={productoSeleccionado} // Ahora sí se pasa el cliente correcto
+            onSave={guardarProducto}
+            onClose={cerrarModal}
+          />
+        )}
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ const EditarCotizacion = () => {
                     autoClose: 2500,
                     theme: "colored",
                 });
-                navigate("/listaCotizaciones");
+                navigate("/lista-cotizaciones");
             })
             .catch(() => toast.error("Error al actualizar la cotización"));
     };
@@ -205,7 +205,7 @@ const EditarCotizacion = () => {
                     💾 Guardar Cambios
                 </button>
                 <button
-                    onClick={() => navigate("/listaCotizaciones")}
+                    onClick={() => navigate("/lista-cotizaciones")}
                     className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500 transition-all"
                 >
                     ❌ Cancelar
