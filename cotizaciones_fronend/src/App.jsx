@@ -10,6 +10,7 @@ import ListaCotizaciones from "./pages/ListaCotizaciones";
 import EditarCotizaciones from "./pages/EditarCotizacion";
 import ReporteInvPage from "./pages/ReporteInvPage";
 import RecibosPage from "./pages/RecibosPage";
+import ListaRecibos from "./pages/ListaRecibos";
 function AppContent() {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
@@ -28,6 +29,8 @@ function AppContent() {
         <Link to="/usuarios" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Usuarios</Link>
         <Link to="/reporte-inventario" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Inventario</Link>
         <Link to="/recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Recibos</Link>
+        <Link to="/lista-recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Recibos</Link>
+        {/* Botón de cerrar sesión */}
         <button
           onClick={() => {
             localStorage.removeItem("token");
@@ -49,6 +52,7 @@ function AppContent() {
           <Route path="/editar-cotizacion/:id" element={<EditarCotizaciones />} />
           <Route path="/reporte-inventario" element={<ReporteInvPage />} />
           <Route path="/recibos" element={<RecibosPage />} />
+          <Route path="/lista-recibos" element={<ListaRecibos />} />
         </Routes>
       </div>
     </div>

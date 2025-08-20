@@ -143,7 +143,7 @@ export default function ListaCotizaciones() {
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="w-full border-collapse bg-white">
                     <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                        <tr>
+                        <tr >
                             <th className="p-3 text-left">N° Cotización</th>
                             <th className="p-3 text-left">Cliente</th>
                             <th className="p-3 text-left">Fecha</th>

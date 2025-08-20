@@ -84,3 +84,8 @@ CREATE TABLE recibo_detalles (
   FOREIGN KEY (cotizacion_id) REFERENCES cotizaciones(id)
 );
 
+ALTER TABLE recibos 
+ADD COLUMN numero_recibo VARCHAR(50) NOT NULL;
+
+ALTER TABLE recibos
+ADD COLUMN cliente_id VARCHAR(20) NOT NULL AFTER id;

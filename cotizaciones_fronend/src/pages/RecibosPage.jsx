@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RecibosPage() {
     const [clientes, setClientes] = useState([]);
     const [clienteId, setClienteId] = useState("");
     const [cotizaciones, setCotizaciones] = useState([]);
+    const [numeroRecibo, setNumeroRecibo] = useState("");
+    const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]); // Fecha actual en formato YYYY-MM-DD
     const [abonos, setAbonos] = useState([]);
     const [observacion, setObservacion] = useState("");
 
@@ -13,6 +17,11 @@ export default function RecibosPage() {
         const fetchClientes = async () => {
             try {
                 const res = await axios.get("http://localhost:4000/api/clientes");
+                axios.get("http://localhost:4000/api/recibos/Numero").then(res => {
+                    const numero = parseInt(res.data.mayor_numero) || 0;
+                    setNumeroRecibo(numero + 1);
+                }
+                )
                 setClientes(res.data);
             } catch (err) {
                 console.error(err);
@@ -20,21 +29,28 @@ export default function RecibosPage() {
         };
         fetchClientes();
     }, []);
-
     // Cargar cotizaciones del cliente seleccionado
     useEffect(() => {
         if (!clienteId) return;
         const fetchCotizaciones = async () => {
             try {
                 const res = await axios.get(`http://localhost:4000/api/cotizaciones/cliente/${clienteId}`);
-                setCotizaciones(res.data);
-                setAbonos([]); // limpiar abonos al cambiar de cliente
+
+                const fechaRecibo = fecha; // ya es YYYY-MM-DD
+
+                const cotizacionesFiltradas = res.data.filter(cot => {
+                    const fechaCot = new Date(cot.fecha).toISOString().split("T")[0]; // YYYY-MM-DD
+                    return fechaCot <= fechaRecibo; // comparación directa de strings
+                });
+
+                setCotizaciones(cotizacionesFiltradas);
+                setAbonos([]);
             } catch (err) {
                 console.error(err);
             }
         };
         fetchCotizaciones();
-    }, [clienteId]);
+    }, [clienteId, fecha]);
 
     // Agregar fila
     const agregarAbono = () => {
@@ -48,9 +64,17 @@ export default function RecibosPage() {
         setAbonos(copia);
     };
 
-    // Actualizar valor fila
+    // Actualizar valor fila con validación
+    // Actualizar valor fila con validación
     const actualizarAbono = (index, field, value) => {
         const copia = [...abonos];
+        if (field === "valor") {
+            const cot = cotizaciones.find(c => c.id == copia[index].cotizacion_id);
+            if (cot && Number(value) > Number(cot.saldo)) {
+                toast.error("⚠️ El abono no puede ser mayor al saldo de la cotización");
+                return;
+            }
+        }
         copia[index][field] = value;
         setAbonos(copia);
     };
@@ -58,22 +82,51 @@ export default function RecibosPage() {
     // Guardar recibo
     const guardarRecibo = async () => {
         try {
-            const payload = { cliente_id: clienteId, observacion, abonos };
+            const payload = {
+                numero_recibo: numeroRecibo,
+                fecha,
+                cliente_id: clienteId,
+                observacion,
+                abonos
+            };
             await axios.post("http://localhost:4000/api/recibos", payload);
-            alert("✅ Recibo registrado con éxito");
+            toast.success("✅ Recibo registrado con éxito");
             setClienteId("");
             setObservacion("");
             setAbonos([]);
             setCotizaciones([]);
         } catch (err) {
             console.error(err);
-            alert("❌ Error al registrar recibo");
+            toast.error("❌ Error al registrar recibo");
         }
     };
+
+    const subtotal = abonos.reduce((acc, abono) => acc + Number(abono.valor || 0), 0);
 
     return (
         <div className="p-6">
             <h2 className="text-xl font-bold mb-4">🧾 Nuevo Recibo</h2>
+            <ToastContainer />
+            {/* Número de Recibo */}
+            <div className="mb-4">
+                <label className="block text-sm mb-1">Número de Recibo</label>
+                <input
+                    type="text"
+                    value={numeroRecibo}
+                    onChange={(e) => setNumeroRecibo(e.target.value)}
+                    className="border p-2 rounded w-full"
+                />
+            </div>
+            {/* Fecha */}
+            <div className="mb-4">
+                <label className="block text-sm mb-1">Fecha</label>
+                <input
+                    type="date"
+                    value={fecha}
+                    onChange={(e) => setFecha(e.target.value)}
+                    className="border p-2 rounded w-full"
+                />
+            </div>
 
             {/* Selección de Cliente */}
             <div className="mb-4">
@@ -138,13 +191,28 @@ export default function RecibosPage() {
                                             {cot ? new Date(cot.fecha).toLocaleDateString("es-CO") : "-"}
                                         </td>
                                         <td className="p-3 text-center">
-                                            {cot ? `$${cot.saldo}` : "-"}
+                                            {cot ? `${new Intl.NumberFormat("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                                minimumFractionDigits: 0,
+                                            }).format(cot.saldo)}` : "-"}
                                         </td>
                                         <td className="p-3 text-center">
                                             <input
-                                                type="number"
-                                                value={abono.valor}
-                                                onChange={(e) => actualizarAbono(index, "valor", e.target.value)}
+                                                type="text"
+                                                value={
+                                                    abono.valor
+                                                        ? new Intl.NumberFormat("es-CO", {
+                                                            style: "currency",
+                                                            currency: "COP",
+                                                            minimumFractionDigits: 0,
+                                                        }).format(abono.valor)
+                                                        : ""
+                                                }
+                                                onChange={(e) => {
+                                                    const rawValue = e.target.value.replace(/\D/g, ""); // quitar todo lo que no sea número
+                                                    actualizarAbono(index, "valor", rawValue ? parseInt(rawValue, 10) : "");
+                                                }}
                                                 className="border p-2 rounded w-32 text-right"
                                             />
                                         </td>
@@ -160,6 +228,16 @@ export default function RecibosPage() {
                                 );
                             })}
                         </tbody>
+                        {/* Subtotal */}
+                        <tfoot>
+                            <tr className="bg-gray-100 font-bold">
+                                <td colSpan="3" className="p-3 text-right">Subtotal:</td>
+                                <td className="p-3 text-center">
+                                    ${abonos.reduce((acc, abono) => acc + Number(abono.valor || 0), 0).toLocaleString("es-CO")}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             )}
