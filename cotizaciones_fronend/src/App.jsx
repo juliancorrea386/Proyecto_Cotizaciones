@@ -11,6 +11,7 @@ import EditarCotizaciones from "./pages/EditarCotizacion";
 import ReporteInvPage from "./pages/ReporteInvPage";
 import RecibosPage from "./pages/RecibosPage";
 import ListaRecibos from "./pages/ListaRecibos";
+import EditarRecibos from "./pages/EditarRecibos";
 function AppContent() {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
@@ -53,6 +54,7 @@ function AppContent() {
           <Route path="/reporte-inventario" element={<ReporteInvPage />} />
           <Route path="/recibos" element={<RecibosPage />} />
           <Route path="/lista-recibos" element={<ListaRecibos />} />
+          <Route path="/editar-recibo/:id" element={<EditarRecibos />} />
         </Routes>
       </div>
     </div>
