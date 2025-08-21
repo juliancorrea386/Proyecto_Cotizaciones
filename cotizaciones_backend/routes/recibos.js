@@ -288,21 +288,27 @@ router.get("/:id/pdf", async (req, res) => {
     // Encabezado tabla
     const startX = 50;
     let posY = doc.y;
+
+    // Dibujar fondo azul
     doc
-      .fontSize(12)
-      .fillColor("white")
       .rect(startX, posY, 200, 20)
-      .fill("#004080")
-      .text("N° Cotización", startX + 5, posY + 5);
+      .fill("#004080");
 
     doc
       .rect(startX + 200, posY, 200, 20)
-      .fill("#004080")
+      .fill("#004080");
+
+    // Poner texto en blanco encima
+    doc
+      .fillColor("white")
+      .fontSize(12)
+      .text("N° Cotización", startX + 5, posY + 5);
+
+    doc
       .text("Valor", startX + 205, posY + 5);
 
     posY += 25;
-    doc.fillColor("black");
-
+    doc.fillColor("black"); // ← vuelve a negro para el contenido normal
     detalles.forEach((d, index) => {
       const bgColor = index % 2 === 0 ? "#F5F5F5" : "white";
       doc.rect(startX, posY, 200, 20).fill(bgColor);

@@ -36,20 +36,20 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/Numero', async (req, res) => {
-  try {
-    const [rows] = await pool.query(
-      'SELECT MAX(numero_cotizacion) AS mayor_numero FROM cotizaciones;'
-    );
-    res.json(rows[0]); // 👈 devuelve solo el objeto, no el array
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const [rows] = await pool.query(
+            'SELECT MAX(numero_cotizacion) AS mayor_numero FROM cotizaciones;'
+        );
+        res.json(rows[0]); // 👈 devuelve solo el objeto, no el array
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Obtener todas las cotizaciones (con opción de filtrar)
 router.get('/', async (req, res) => {
     try {
-        const { desde, hasta, cliente, numero, tipo } = req.query;
+        const { desde, hasta, cliente, numero, tipo, estado } = req.query;
 
         let query = `
             SELECT
@@ -58,7 +58,14 @@ router.get('/', async (req, res) => {
                 c.tipo,
                 c.numero_cotizacion,
                 cli.nombre AS cliente,
-                c.subtotal
+                c.subtotal,
+                (subtotal - saldo) AS abonado,   -- lo pagado hasta ahora
+                saldo,
+                CASE
+                    WHEN saldo = 0 THEN 'Pagada'
+                    WHEN saldo = subtotal THEN 'Pendiente'
+                    ELSE 'Abonada'
+                END AS estado
             FROM cotizaciones c
             JOIN clientes cli ON c.cliente_id = cli.id
             WHERE 1=1
@@ -88,7 +95,15 @@ router.get('/', async (req, res) => {
             query += " AND c.tipo = ? ";
             params.push(tipo);
         }
-
+        if (estado) {
+            if (estado === "Pagada") {
+                query += " AND saldo = 0 ";
+            } else if (estado === "Pendiente") {
+                query += " AND saldo = subtotal ";
+            } else if (estado === "Abonada") {
+                query += " AND saldo > 0 AND saldo < subtotal ";
+            }
+        }
         query += " ORDER BY c.id ASC";
 
         const [rows] = await pool.query(query, params);
@@ -176,16 +191,16 @@ router.put('/:id', async (req, res) => {
 
 // GET: Cotizaciones con saldo por cliente
 router.get("/cliente/:clienteId", async (req, res) => {
-  const { clienteId } = req.params;
-  try {
-    const [rows] = await pool.query(
-      "SELECT id, numero_cotizacion, fecha, saldo FROM cotizaciones WHERE cliente_id = ? AND saldo > 0 AND tipo = 'credito'",
-      [clienteId]
-    );
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: "Error al obtener cotizaciones del cliente" });
-  }
+    const { clienteId } = req.params;
+    try {
+        const [rows] = await pool.query(
+            "SELECT id, numero_cotizacion, fecha, saldo FROM cotizaciones WHERE cliente_id = ? AND saldo > 0 AND tipo = 'credito'",
+            [clienteId]
+        );
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener cotizaciones del cliente" });
+    }
 });
 
 module.exports = router;

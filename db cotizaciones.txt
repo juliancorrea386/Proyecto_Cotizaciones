@@ -89,3 +89,32 @@ ADD COLUMN numero_recibo VARCHAR(50) NOT NULL;
 
 ALTER TABLE recibos
 ADD COLUMN cliente_id VARCHAR(20) NOT NULL AFTER id;
+
+SELECT r.id, r.numero_recibo, r.fecha, r.observacion,
+       r.cliente_id,
+       cl.nombre AS cliente_nombre, c.subtotal,
+       COALESCE(SUM(rd.valor), 0) AS total_abonos
+FROM recibos r
+LEFT JOIN recibo_detalles rd ON r.id = rd.recibo_id
+LEFT JOIN cotizaciones c ON rd.cotizacion_id = c.id
+LEFT JOIN clientes cl ON r.cliente_id = cl.id
+WHERE 1=1
+GROUP BY r.id, r.numero_recibo, r.fecha, r.observacion, r.cliente_id, cl.nombre, c.subtotal;
+
+UPDATE cotizaciones
+SET saldo = 195000
+WHERE id=2;
+
+SELECT 
+    id,
+    numero_cotizacion,
+    cliente_id,
+    subtotal,
+    (subtotal - saldo) AS abonado,   -- lo pagado hasta ahora
+    saldo,
+    CASE
+        WHEN saldo = 0 THEN 'Pagada'
+        WHEN saldo = subtotal THEN 'Pendiente'
+        ELSE 'Abonada'
+    END AS estado
+FROM cotizaciones;

@@ -11,6 +11,7 @@ export default function ListaCotizaciones() {
     const [cliente, setCliente] = useState("");
     const [numeroCotizacion, setNumeroCotizacion] = useState("");
     const [tipo, setTipo] = useState("");
+    const [estado, setEstado] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -53,6 +54,7 @@ export default function ListaCotizaciones() {
         if (cliente) params.cliente = cliente;
         if (numeroCotizacion) params.numero = numeroCotizacion;
         if (tipo) params.tipo = tipo;
+        if (estado) params.estado = estado;
 
         fetchCotizaciones(params);
     };
@@ -63,6 +65,7 @@ export default function ListaCotizaciones() {
         setCliente("");
         setNumeroCotizacion("");
         setTipo("");
+        setEstado("");
         fetchCotizaciones(); // recargar todas
     };
 
@@ -123,6 +126,19 @@ export default function ListaCotizaciones() {
                         <option value="credito">Crédito</option>
                     </select>
                 </div>
+                <div>
+                    <label className="block text-gray-700">Estado:</label>
+                    <select
+                        value={estado}
+                        onChange={(e) => setEstado(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    >
+                        <option value="">-- Todos --</option>
+                        <option value="Abonada">Abonada</option>
+                        <option value="Pagada">Pagada</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
                 <div className="flex gap-2">
                     <button
                         onClick={aplicarFiltros}
@@ -148,6 +164,9 @@ export default function ListaCotizaciones() {
                             <th className="p-3 text-left">Cliente</th>
                             <th className="p-3 text-left">Fecha</th>
                             <th className="p-3 text-left">Total</th>
+                            <th className="p-3 text-left">Abono</th>
+                            <th className="p-3 text-left">Saldo</th>
+                            <th className="p-3 text-left">Estado</th>
                             <th className="p-3 text-left">Tipo</th>
                             <th className="p-3 text-center">Acciones</th>
                         </tr>
@@ -175,6 +194,21 @@ export default function ListaCotizaciones() {
                                             minimumFractionDigits: 0,
                                         }).format(c.subtotal)}
                                     </td>
+                                    <td className="p-3 text-left font-semibold">
+                                        {new Intl.NumberFormat("es-CO", {
+                                            style: "currency",
+                                            currency: "COP",
+                                            minimumFractionDigits: 0,
+                                        }).format(c.abonado)}
+                                    </td>
+                                    <td className="p-3 text-left font-semibold">
+                                        {new Intl.NumberFormat("es-CO", {
+                                            style: "currency",
+                                            currency: "COP",
+                                            minimumFractionDigits: 0,
+                                        }).format(c.saldo)}
+                                    </td>
+                                    <td className="p-3 text-left font-semibold">{c.estado}</td>
                                     <td className="p-3 text-center font-semibold">{c.tipo}</td>
                                     <td className="p-3 text-center space-x-2">
                                         <button
@@ -204,10 +238,13 @@ export default function ListaCotizaciones() {
                     {cotizaciones.length > 0 && (
                         <tfoot className="bg-gray-100 font-bold">
                             <tr>
+                                {/* Texto descriptivo ocupa las 3 primeras columnas */}
                                 <td colSpan="3" className="p-3 text-right">
-                                    TOTAL GENERAL:
+                                    TOTALES:
                                 </td>
-                                <td className="p-3 text-right">
+
+                                {/* Subtotal */}
+                                <td className="p-3 text-center">
                                     {new Intl.NumberFormat("es-CO", {
                                         style: "currency",
                                         currency: "COP",
@@ -219,6 +256,36 @@ export default function ListaCotizaciones() {
                                         )
                                     )}
                                 </td>
+
+                                {/* Abonado */}
+                                <td className="p-3 text-center">
+                                    {new Intl.NumberFormat("es-CO", {
+                                        style: "currency",
+                                        currency: "COP",
+                                        minimumFractionDigits: 0,
+                                    }).format(
+                                        cotizaciones.reduce(
+                                            (sum, c) => sum + (Number(c.abonado) || 0),
+                                            0
+                                        )
+                                    )}
+                                </td>
+
+                                {/* Saldo */}
+                                <td className="p-3 text-center">
+                                    {new Intl.NumberFormat("es-CO", {
+                                        style: "currency",
+                                        currency: "COP",
+                                        minimumFractionDigits: 0,
+                                    }).format(
+                                        cotizaciones.reduce(
+                                            (sum, c) => sum + (Number(c.saldo) || 0),
+                                            0
+                                        )
+                                    )}
+                                </td>
+
+                                {/* Estado y acciones vacíos */}
                                 <td colSpan="2"></td>
                             </tr>
                         </tfoot>
