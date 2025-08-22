@@ -17,7 +17,8 @@ function AppContent() {
   const isLoggedIn = !!localStorage.getItem("token");
 
   if (!isLoggedIn) {
-    return <LoginPage onLogin={() => navigate("/clientes")} />;
+    navigate("/login");
+    return null;
   }
 
   return (

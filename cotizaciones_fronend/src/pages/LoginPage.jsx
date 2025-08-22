@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -22,10 +24,11 @@ export default function LoginPage() {
 
             // Redirigir según rol
             if (res.data.user.role === "admin") {
-                window.location.href = "/admin";
+                navigate("/cotizaciones");
             } else {
-                window.location.href = "/dashboard";
+                navigate("/clientes"); // 👈 si ambos van a la misma
             }
+
         } catch (err) {
             console.error("Error en login:", err);
             setError("Ocurrió un error");
@@ -57,9 +60,9 @@ export default function LoginPage() {
                     required
                 />
 
-                <button 
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
                 >Ingresar</button>
             </form>
         </div>
