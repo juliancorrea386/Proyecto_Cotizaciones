@@ -8,10 +8,12 @@ import UsuariosPage from "./pages/UsuariosPage";
 import Cotizaciones from "./pages/Cotizaciones";
 import ListaCotizaciones from "./pages/ListaCotizaciones";
 import EditarCotizaciones from "./pages/EditarCotizacion";
-import ReporteInvPage from "./pages/ReporteInvPage";
+import ReporteInvPage from "./pages/reporteInvPage";
 import RecibosPage from "./pages/RecibosPage";
 import ListaRecibos from "./pages/ListaRecibos";
 import EditarRecibos from "./pages/EditarRecibos";
+import MovimientosPage from "./pages/MovimientosPage";
+import ReporteVentasPage from "./pages/ReporteVentasPage";
 function AppContent() {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
@@ -32,6 +34,8 @@ function AppContent() {
         <Link to="/reporte-inventario" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Inventario</Link>
         <Link to="/recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Recibos</Link>
         <Link to="/lista-recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Recibos</Link>
+        <Link to="/movimientos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Movimientos</Link>
+        <Link to="/reporte-ventas" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Ventas</Link>
         {/* Botón de cerrar sesión */}
         <button
           onClick={() => {
@@ -56,6 +60,8 @@ function AppContent() {
           <Route path="/recibos" element={<RecibosPage />} />
           <Route path="/lista-recibos" element={<ListaRecibos />} />
           <Route path="/editar-recibo/:id" element={<EditarRecibos />} />
+          <Route path="/movimientos" element={<MovimientosPage />} />
+          <Route path="/reporte-ventas" element={<ReporteVentasPage />} />
         </Routes>
       </div>
     </div>
