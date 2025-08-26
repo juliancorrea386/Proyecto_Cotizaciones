@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Crear cotización
 router.post('/', async (req, res) => {
     const { numero_cotizacion, fecha, cliente_id, tipo, productos } = req.body;
 
@@ -10,11 +9,21 @@ router.post('/', async (req, res) => {
         // Calcular subtotal
         const subtotal = productos.reduce((acc, p) => acc + (p.precio_venta * p.cantidad), 0);
 
+        // Definir total, tipo_pago y saldo
+        let tipo_pago = tipo;
+        let total = subtotal;
+        let saldo = 0;
+
+        if (tipo === "credito") {
+            saldo = subtotal; // 👈 se queda pendiente
+        }
+
         // Insertar cotización
         const [cotizacionResult] = await pool.query(
-            `INSERT INTO cotizaciones (numero_cotizacion, fecha, cliente_id, tipo, subtotal) 
-             VALUES (?, ?, ?, ?, ?)`,
-            [numero_cotizacion, fecha, cliente_id, tipo, subtotal]
+            `INSERT INTO cotizaciones 
+             (numero_cotizacion, fecha, cliente_id, tipo, subtotal, tipo_pago, total, saldo) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [numero_cotizacion, fecha, cliente_id, tipo, subtotal, tipo_pago, total, saldo]
         );
 
         const cotizacionId = cotizacionResult.insertId;

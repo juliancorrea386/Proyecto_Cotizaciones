@@ -209,7 +209,7 @@ router.get("/reporte-ventas/pdf", async (req, res) => {
     doc.moveDown(1);
 
     drawTable(
-      "Cotizaciones a Crédito",
+      "Ventas a Crédito",
       ["N° Cotización", "Cliente", "Subtotal"],
       creditos.map(c => [c.numero_cotizacion, c.cliente, money(c.subtotal)]),
       "Total Créditos",

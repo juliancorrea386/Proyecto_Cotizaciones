@@ -53,6 +53,13 @@ export default function ReporteVentasPage() {
                 >
                     Generar
                 </button>
+                <button
+                    onClick={() => window.open(`http://localhost:4000/api/reportes//reporte-ventas/pdf?desde=${desde}&hasta=${hasta}`, "_blank")}
+                    //onClick={() => window.open(`http://localhost:4000/api/recibos/${r.id}/pdf`, "_blank")}
+                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
+                >
+                    📄 PDF
+                </button>
             </form>
 
             {data && (

@@ -119,6 +119,7 @@ export default function MovimientosPage() {
                             <th className="p-3 text-left">N° Cotización</th>
                             <th className="p-3 text-left">Cliente</th>
                             <th className="p-3 text-left">Fecha</th>
+                            <th className="p-3 text-left">Tipo</th>
                             <th className="p-3 text-right">Total</th>
                             <th className="p-3 text-right">Abonado</th>
                             <th className="p-3 text-right">Saldo</th>
@@ -133,6 +134,7 @@ export default function MovimientosPage() {
                                     <td className="p-3">
                                         {new Date(m.fecha_cotizacion).toLocaleDateString("es-ES")}
                                     </td>
+                                    <td className="p-3 capitalize">{m.tipo}</td>
                                     <td className="p-3 text-right font-semibold">
                                         {new Intl.NumberFormat("es-CO", {
                                             style: "currency",

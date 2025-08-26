@@ -10,6 +10,7 @@ router.get("/", async (req, res) => {
             SELECT 
                 c.id AS cotizacion_id,
                 c.numero_cotizacion,
+                c.tipo,
                 c.fecha AS fecha_cotizacion,
                 cli.nombre AS cliente,
                 c.subtotal,
@@ -35,8 +36,8 @@ router.get("/", async (req, res) => {
 
                 -- Saldo
                 CASE 
-    WHEN c.tipo = 'contado' THEN 0
-    ELSE (
+        WHEN c.tipo = 'contado' THEN 0
+        ELSE (
         c.subtotal - IFNULL(
             (
                 SELECT SUM(r2.valor)
@@ -45,10 +46,10 @@ router.get("/", async (req, res) => {
                 WHERE r2.cotizacion_id = c.id
                   AND rr2.fecha <= r.fecha  -- solo sumo lo abonado hasta ese recibo
             ), 
-            0
+                0
+            )
         )
-    )
-END AS saldo
+        END AS saldo
 
             FROM cotizaciones c
             JOIN clientes cli ON cli.id = c.cliente_id

@@ -10,7 +10,7 @@ export default function Cotizaciones() {
     const [clienteId, setClienteId] = useState("");
     const [productos, setProductos] = useState([]);
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
-    const [tipo, setTipo] = useState("contado");
+    const [tipo, setTipo] = useState("");
     const [busqueda, setBusqueda] = useState("");
     useEffect(() => {
         axios.get("http://localhost:4000/api/clientes").then(res => setClientes(res.data));
@@ -74,9 +74,9 @@ export default function Cotizaciones() {
 
             // 🔹 Limpiar todos los campos después de guardar
             setFecha("");
-            setNumeroCotizacion("");
+            setNumeroCotizacion(numeroCotizacion + 1);
             setClienteId("");
-            setTipo("contado");
+            setTipo("");
             setBusqueda("");
             setProductosSeleccionados([]);
         } catch (error) {
@@ -110,6 +110,25 @@ export default function Cotizaciones() {
                     value={numeroCotizacion} onChange={e => setNumeroCotizacion(e.target.value)}
                     className="border p-2 rounded-md"
                 />
+                <select
+                    value={tipo}
+                    onChange={e => {
+                        const nuevoTipo = e.target.value;
+                        setTipo(nuevoTipo);
+
+                        if (nuevoTipo === "contado") {
+                            const clienteDefault = clientes.find(c => c.nombre.includes("CUANTIAS MENORES"));
+                            if (clienteDefault) {
+                                setClienteId(clienteDefault.id);
+                            }
+                        }
+                    }}
+                    className="border p-2 rounded-md"
+                >
+                    <option value="">Seleccione tipo</option>
+                    <option value="contado">Contado</option>
+                    <option value="credito">Crédito</option>
+                </select>
 
                 <select
                     value={clienteId} onChange={e => setClienteId(e.target.value)}
@@ -119,13 +138,6 @@ export default function Cotizaciones() {
                     {clientes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                 </select>
 
-                <select
-                    value={tipo} onChange={e => setTipo(e.target.value)}
-                    className="border p-2 rounded-md"
-                >
-                    <option value="contado">Contado</option>
-                    <option value="credito">Crédito</option>
-                </select>
 
             </div>
 

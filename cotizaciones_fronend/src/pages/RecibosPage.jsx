@@ -94,7 +94,9 @@ export default function RecibosPage() {
             setClienteId("");
             setObservacion("");
             setAbonos([]);
+            setNumeroRecibo( (num) => num + 1);
             setCotizaciones([]);
+            
         } catch (err) {
             console.error(err);
             toast.error("❌ Error al registrar recibo");
