@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import movimientosService from "../services/movimientosService";
 export default function MovimientosPage() {
     const [movimientos, setMovimientos] = useState([]);
     const [fechaInicio, setFechaInicio] = useState("");
@@ -13,11 +13,15 @@ export default function MovimientosPage() {
         fetchMovimientos();
     }, []);
 
-    const fetchMovimientos = (params = {}) => {
-        axios
-            .get(`${import.meta.env.VITE_API_URL}/api/movimientos`, { params })
-            .then((res) => setMovimientos(res.data))
-            .catch((err) => console.error("Error al obtener movimientos:", err));
+
+    const fetchMovimientos = async (params = {}) => {
+        try {
+            const data = await movimientosService.getMovimientos(params);
+            setMovimientos(data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Error cargando cotizaciones");
+        }
     };
 
     const aplicarFiltros = () => {

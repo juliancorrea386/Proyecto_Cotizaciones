@@ -3,7 +3,8 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import clientesService from "../services/clientesService";
+import recibosService from "../services/recibosService";
 export default function EditarRecibos() {
     const { id } = useParams(); // id del recibo a editar
     const navigate = useNavigate();
@@ -20,8 +21,8 @@ export default function EditarRecibos() {
     useEffect(() => {
         const fetchClientes = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`);
-                setClientes(res.data);
+                const res = await clientesService.listar();
+                setClientes(res);
             } catch (err) {
                 console.error(err);
             }
@@ -32,7 +33,7 @@ export default function EditarRecibos() {
     useEffect(() => {
         const fetchRecibo = async () => {
             try {
-                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/recibos/${id}`);
+                const data = await recibosService.obtenerPorId(id);
 
                 setNumeroRecibo(data.numero_recibo);
                 setFecha(data.fecha.split("T")[0]); // formato YYYY-MM-DD
@@ -97,7 +98,7 @@ export default function EditarRecibos() {
                 observacion,
                 detalles: abonos,
             };
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/recibos/${id}`, payload);
+            await recibosService.actualizar(id, payload);
             toast.success("✅ Recibo actualizado con éxito");
             setTimeout(() => navigate("/lista-recibos"), 1500); // volver a la lista
         } catch (err) {

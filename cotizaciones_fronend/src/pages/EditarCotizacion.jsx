@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import clientesService from "../services/clientesService";
+import productosService from "../services/productosService";
+import cotizacionesService from "../services/cotizacionesService";
 const EditarCotizacion = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -18,25 +20,31 @@ const EditarCotizacion = () => {
 
     // Cargar clientes para el select
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`)
-            .then(res => setClientes(res.data))
+        clientesService.listar()
+            .then(res => setClientes(res))
             .catch(() => toast.error("Error al cargar clientes"));
     }, []);
 
     // Cargar datos de la cotización
     useEffect(() => {
-        axios
-            .get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`)
-            .then((res) => {
-                const cot = res.data;
+        const cargarCotizacion = async () => {
+            try {
+                const cot = await cotizacionesService.obtenerPorId(id);
                 setNumeroCotizacion(cot.numero_cotizacion);
-                setFecha(cot.fecha.split("T")[0]);
+                setFecha(cot.fecha.split("T")[0]); // formato YYYY-MM-DD
                 setClienteId(cot.cliente_id);
                 setTipo(cot.tipo);
                 setProductos(cot.productos || []);
+            } catch (err) {
+                toast.error("Error al cargar la cotización");
+            } finally {
                 setLoading(false);
-            })
-            .catch(() => toast.error("Error al cargar la cotización"));
+            }
+        };
+
+        if (id) {
+            cargarCotizacion();
+        }
     }, [id]);
 
     const actualizarProducto = (index, campo, valor) => {
@@ -45,29 +53,32 @@ const EditarCotizacion = () => {
         setProductos(nuevos);
     };
 
-    const guardarCambios = () => {
+    const guardarCambios = async () => {
         if (!numeroCotizacion || !fecha || !clienteId || productos.length === 0) {
             toast.warning("Completa todos los campos y productos");
             return;
         }
 
-        axios
-            .put(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`, {
+        try {
+            await cotizacionesService.actualizar(id, {
                 numero_cotizacion: numeroCotizacion,
                 fecha,
                 cliente_id: clienteId,
                 tipo,
                 productos,
-            })
-            .then(() => {
-                toast.success("Cotización actualizada con éxito", {
-                    position: "top-center",
-                    autoClose: 2500,
-                    theme: "colored",
-                });
-                navigate("/lista-cotizaciones");
-            })
-            .catch(() => toast.error("Error al actualizar la cotización"));
+            });
+
+            toast.success("Cotización actualizada con éxito", {
+                position: "top-center",
+                autoClose: 2500,
+                theme: "colored",
+            });
+
+            navigate("/lista-cotizaciones");
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al actualizar la cotización");
+        }
     };
 
     const totalGeneral = productos.reduce(

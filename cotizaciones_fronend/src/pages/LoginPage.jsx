@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import authService from "../services/authService";
 export default function LoginPage() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -9,21 +9,13 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-                username,
-                password,
-            });
-
-            console.log("Respuesta del backend:", res.data);
-
-            // Guardar token y usuario en localStorage
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("user", JSON.stringify(res.data.user));
+            const res = await authService.login(username, password);
 
             // Redirigir según rol
-            if (res.data.user.role === "admin") {
+            if (res.role === "admin") {
                 navigate("/cotizaciones");
             } else {
                 navigate("/clientes"); // 👈 si ambos van a la misma

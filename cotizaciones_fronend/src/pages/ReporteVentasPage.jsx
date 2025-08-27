@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import reportesService from "../services/reportesService";
 export default function ReporteVentasPage() {
     const [desde, setDesde] = useState("");
     const [hasta, setHasta] = useState("");
     const [data, setData] = useState(null);
 
-    const fetchReporte = async () => {
+    const fetchReporte = async (params ={desde,hasta}) => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reportes/ReporteVentas`, {
-                params: { desde, hasta },
-            });
-            console.log(res.data);
-            setData(res.data);
+            const res = await reportesService.getReporteVenta(params);
+            setData(res);
         } catch (error) {
             console.error("Error cargando reporte:", error);
         }

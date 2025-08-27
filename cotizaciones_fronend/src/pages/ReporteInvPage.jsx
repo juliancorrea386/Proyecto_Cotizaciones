@@ -2,18 +2,16 @@ import React, { useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-
+import reportesService from "../services/reportesService";
 export default function ReporteInvPage() {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   const [reporte, setReporte] = useState([]);
 
-  const generarReporte = async () => {
+  const generarReporte = async (params = {desde,hasta}) => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reportes/inventario`, {
-        params: { desde, hasta }
-      });
-      setReporte(res.data);
+      const res = await reportesService.getReporteInv(params);
+      setReporte(res);
     } catch (err) {
       console.error(err);
     }
@@ -86,6 +84,7 @@ export default function ReporteInvPage() {
         <table className="w-full border-collapse bg-white">
           <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
             <tr>
+              <th className="p-3 text-center">Referencia</th>
               <th className="p-3 text-center">Producto</th>
               <th className="p-3 text-center">Cantidad Salida</th>
             </tr>
@@ -100,6 +99,7 @@ export default function ReporteInvPage() {
             ) : (
               reporte.map((r) => (
                 <tr key={r.id} className="border-t">
+                  <td className="p-3 text-left font-semibold">{r.referencia}</td>
                   <td className="p-3 text-left font-semibold">{r.nombre}</td>
                   <td className="p-3 text-left font-semibold">{r.total_salidas}</td>
                 </tr>

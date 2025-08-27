@@ -13,6 +13,7 @@ router.get('/inventario', async (req, res) => {
             SELECT 
                 p.id,
                 p.nombre,
+                p.referencia,
                 SUM(cd.cantidad) AS total_salidas
             FROM cotizacion_detalles cd
             JOIN productos p ON cd.producto_id = p.id

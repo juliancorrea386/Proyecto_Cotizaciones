@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import clientesService from "../services/clientesService";
+import recibosService from "../services/recibosService";
+import cotizacionesService from "../services/cotizacionesService";
 export default function RecibosPage() {
     const [clientes, setClientes] = useState([]);
     const [clienteId, setClienteId] = useState("");
@@ -16,13 +18,10 @@ export default function RecibosPage() {
     useEffect(() => {
         const fetchClientes = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`);
-                axios.get(`${import.meta.env.VITE_API_URL}/api/recibos/Numero`).then(res => {
-                    const numero = parseInt(res.data.mayor_numero) || 0;
-                    setNumeroRecibo(numero + 1);
-                }
-                )
-                setClientes(res.data);
+                const res = await clientesService.listar();
+                const ultimoNumero = await recibosService.obtenerUltimoNumero();
+                setNumeroRecibo(ultimoNumero);
+                setClientes(res);
             } catch (err) {
                 console.error(err);
             }
@@ -32,23 +31,26 @@ export default function RecibosPage() {
     // Cargar cotizaciones del cliente seleccionado
     useEffect(() => {
         if (!clienteId) return;
+
         const fetchCotizaciones = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/cliente/${clienteId}`);
+                // Obtenemos todas las cotizaciones de un cliente
+                const todasCotizaciones = await cotizacionesService.obtenerPorCliente(clienteId);
 
+                // Filtramos por fecha
                 const fechaRecibo = fecha; // ya es YYYY-MM-DD
-
-                const cotizacionesFiltradas = res.data.filter(cot => {
+                const cotizacionesFiltradas = todasCotizaciones.filter(cot => {
                     const fechaCot = new Date(cot.fecha).toISOString().split("T")[0]; // YYYY-MM-DD
-                    return fechaCot <= fechaRecibo; // comparación directa de strings
+                    return fechaCot <= fechaRecibo;
                 });
 
                 setCotizaciones(cotizacionesFiltradas);
                 setAbonos([]);
             } catch (err) {
-                console.error(err);
+                console.error("Error cargando cotizaciones del cliente:", err);
             }
         };
+
         fetchCotizaciones();
     }, [clienteId, fecha]);
 
@@ -89,14 +91,14 @@ export default function RecibosPage() {
                 observacion,
                 abonos
             };
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/recibos`, payload);
+            await recibosService.crear(payload);
             toast.success("✅ Recibo registrado con éxito");
             setClienteId("");
             setObservacion("");
             setAbonos([]);
-            setNumeroRecibo( (num) => num + 1);
+            setNumeroRecibo((num) => num + 1);
             setCotizaciones([]);
-            
+
         } catch (err) {
             console.error(err);
             toast.error("❌ Error al registrar recibo");

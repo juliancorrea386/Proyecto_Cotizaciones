@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { ref } = require('pdfkit');
 
 // Obtener todos los productos
 router.get('/', async (req, res) => {
@@ -25,7 +26,7 @@ router.get('/:id', async (req, res) => {
 
 // Crear producto
 router.post('/', async (req, res) => {
-    const { nombre, precio_costo, precio_venta, iva, embalaje, stock } = req.body;
+    const { nombre, precio_costo, precio_venta, iva, embalaje, stock, referencia } = req.body;
 
     if (!nombre || precio_costo == null || precio_venta == null || !iva || !embalaje || stock == null) {
         return res.status(400).json({ error: "Todos los campos son obligatorios" });
@@ -33,10 +34,10 @@ router.post('/', async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            'INSERT INTO productos (nombre, precio_costo, precio_venta, iva, embalaje, stock) VALUES (?, ?, ?, ?, ?, ?)',
-            [nombre, precio_costo, precio_venta, iva, embalaje, stock]
+            'INSERT INTO productos (nombre, precio_costo, precio_venta, iva, embalaje, stock, Referencia) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nombre, precio_costo, precio_venta, iva, embalaje, stock, referencia]
         );
-        res.status(201).json({ id: result.insertId, nombre, precio_costo, precio_venta, iva, embalaje, stock });
+        res.status(201).json({ id: result.insertId, nombre, precio_costo, precio_venta, iva, embalaje, stock, referencia });
     } catch (error) {
         console.error("Error al crear producto:", error);
         res.status(500).json({ error: error.message });
@@ -46,14 +47,14 @@ router.post('/', async (req, res) => {
 
 // Actualizar producto
 router.put('/:id', async (req, res) => {
-    const { nombre, precio_costo, precio_venta, iva, embalaje, stock } = req.body;
+    const { nombre, precio_costo, precio_venta, iva, embalaje, stock, Referencia } = req.body;
     try {
         const [result] = await pool.query(
-            'UPDATE productos SET nombre=?, precio_costo=?, precio_venta=?, iva=?, embalaje=?, stock=? WHERE id=?',
-            [nombre, precio_costo, precio_venta, iva, embalaje, stock, req.params.id]
+            'UPDATE productos SET nombre=?, precio_costo=?, precio_venta=?, iva=?, embalaje=?, stock=?, Referencia=?  WHERE id=?',
+            [nombre, precio_costo, precio_venta, iva, embalaje, stock,Referencia, req.params.id]
         );
         if (result.affectedRows === 0) return res.status(404).json({ message: 'Producto no encontrado' });
-        res.json({ id: req.params.id, nombre, precio_costo, precio_venta, iva, embalaje, stock });
+        res.json({ id: req.params.id, nombre, precio_costo, precio_venta, iva, embalaje, stock, Referencia });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
+import cotizacionesService from "../services/cotizacionesService";
 export default function ListaCotizaciones() {
     const [cotizaciones, setCotizaciones] = useState([]);
     const [fechaInicio, setFechaInicio] = useState("");
@@ -18,32 +18,26 @@ export default function ListaCotizaciones() {
         fetchCotizaciones();
     }, []);
 
-    const fetchCotizaciones = (params = {}) => {
-        axios
-            .get(`${import.meta.env.VITE_API_URL}/api/cotizaciones`, { params })
-            .then((res) => setCotizaciones(res.data))
-            .catch((err) => console.error(err));
+    const fetchCotizaciones = async (params = {}) => {
+        try {
+            const data = await cotizacionesService.listar(params);
+            setCotizaciones(data);
+        } catch (err) {
+            console.error(err);
+            toast.error("Error cargando cotizaciones");
+        }
     };
 
-    const eliminarCotizacion = (id) => {
+    const eliminarCotizacion = async (id) => {
         if (window.confirm("¿Seguro que quieres eliminar esta cotización?")) {
-            axios
-                .delete(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`)
-                .then(() => {
-                    toast.success("Cotización eliminada con éxito", {
-                        position: "top-center",
-                        autoClose: 2500,
-                        theme: "colored",
-                    });
-                    setCotizaciones(cotizaciones.filter((c) => c.id !== id));
-                })
-                .catch(() =>
-                    toast.error("Error al eliminar la cotización", {
-                        position: "top-center",
-                        autoClose: 2500,
-                        theme: "colored",
-                    })
-                );
+            try {
+                await cotizacionesService.eliminar(id);
+                toast.success("Cotización eliminada con éxito");
+                setCotizaciones(cotizaciones.filter((c) => c.id !== id));
+            } catch (err) {
+                console.error(err);
+                toast.error("Error al eliminar la cotización");
+            }
         }
     };
 

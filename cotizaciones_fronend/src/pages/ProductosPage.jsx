@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getProductos, createProducto, updateProducto, deleteProducto } from "../services/productosService";
+import productosSerive from "../services/productosService";
 import ProductoForm from "../components/ProductoForm";
 export default function Productos() {
   const [productos, setProductos] = useState([]);
@@ -9,7 +9,7 @@ export default function Productos() {
 
   const fetchData = async () => {
     try {
-      const data = await getProductos();
+      const data = await productosSerive.listar();
       setProductos(data);
     } catch (err) {
       console.error("Error al obtener productos:", err);
@@ -31,6 +31,7 @@ export default function Productos() {
     setShowForm(true);
   };
   const productoParaEnviar = (producto) => ({
+    referencia: producto.Referencia,
     nombre: producto.nombre,
     precio_costo: Number(producto.precio_costo),
     precio_venta: Number(producto.precio_venta),
@@ -42,10 +43,10 @@ export default function Productos() {
   const guardarProducto = async (producto) => {
     if (producto.id) {
       // Editar cliente
-      await updateProducto(producto.id, producto);
+      await productosSerive.actualizar(producto.id, producto);
     } else {
       // Nuevo cliente
-      await createProducto(productoParaEnviar(producto));
+      await productosSerive.crear(productoParaEnviar(producto));
     }
     fetchData();
     cerrarModal();
@@ -57,7 +58,7 @@ export default function Productos() {
 
   const handleDelete = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar este producto?")) {
-      await deleteProducto(id);
+      await productosSerive.eliminar(id);
       fetchData();
     }
   };
@@ -76,6 +77,7 @@ export default function Productos() {
         <table className="w-full border-collapse bg-white">
           <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
             <tr >
+              <th className="border p-2">Referencia</th>
               <th className="border p-2">Nombre</th>
               <th className="border p-2">Precio Costo</th>
               <th className="border p-2">Precio Venta</th>
@@ -89,6 +91,7 @@ export default function Productos() {
             {productos.length > 0 ? (
               productos.map((producto) => (
                 <tr key={producto.id}>
+                  <td className="border p-2">{producto.Referencia}</td>
                   <td className="border p-2">{producto.nombre}</td>
                   <td className="border p-2">{new Intl.NumberFormat("es-CO", {
                     style: "currency",

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import recibosService from "../services/recibosService";
 export default function ListaRecibos() {
     const [recibos, setRecibos] = useState([]);
     const [fechaInicio, setFechaInicio] = useState("");
@@ -13,10 +14,10 @@ export default function ListaRecibos() {
     }, []);
 
     const fetchRecibos = (params = {}) => {
-        axios
-            .get(`${import.meta.env.VITE_API_URL}/api/recibos`, { params })
-            .then((res) => setRecibos(res.data))
-            .catch((err) => console.error(err));
+       recibosService
+      .listar(params)
+      .then((data) => setRecibos(data))
+      .catch((err) => console.error(err));
     };
 
     const aplicarFiltros = () => {

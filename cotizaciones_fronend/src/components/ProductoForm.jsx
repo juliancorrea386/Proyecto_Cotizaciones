@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const ProductoForm = ({ producto, onSave, onClose }) => {
   const [formData, setFormData] = useState({
+    Referencia: "",
     nombre: "",
     precio_costo: "",
     precio_venta: "",
@@ -22,7 +23,19 @@ const ProductoForm = ({ producto, onSave, onClose }) => {
     "Frasco",
     "Galón",
     "Bolsa",
+    "Unidad",
+    "Bidón",
+    "Bulto",
+    "Kilos",
+    "Caja",
+    "Bloque",
+    "Libra",
+    "Balde",
+    "Manga",
+    "CUBETA",
+    "Barra"
   ];
+
 
   useEffect(() => {
     if (producto) {
@@ -54,9 +67,19 @@ const ProductoForm = ({ producto, onSave, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg w-96">
         <h2 className="text-xl font-bold mb-4">
-          {producto ? "Editar Cliente" : "Nuevo Cliente"}
+          {producto ? "Editar Producto" : "Nuevo Producto"}
         </h2>
         <form onSubmit={handleSubmit}>
+
+          <input
+            type="text"
+            name="Referencia"
+            value={formData.Referencia}
+            onChange={handleChange}
+            placeholder="Referencia"
+            className="border p-2 w-full mb-2"
+            required
+          />
           <input
             type="text"
             name="nombre"

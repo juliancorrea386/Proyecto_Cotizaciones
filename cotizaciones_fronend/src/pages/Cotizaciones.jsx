@@ -3,6 +3,9 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
+import clientesService from "../services/clientesService";
+import productosService from "../services/productosService";
+import cotizacionesService from "../services/cotizacionesService";
 export default function Cotizaciones() {
     const [fecha, setFecha] = useState("");
     const [numeroCotizacion, setNumeroCotizacion] = useState("");
@@ -14,18 +17,27 @@ export default function Cotizaciones() {
     const [busqueda, setBusqueda] = useState("");
 
     useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`)
-        .then(res => setClientes(res.data));
+        clientesService.listar()
+            .then(data => setClientes(data))
+            .catch(err => {
+                console.error("Error cargando clientes:", err);
+                toast.error("No se pudieron cargar los clientes");
+            });
 
-    axios.get(`${import.meta.env.VITE_API_URL}/api/productos`)
-        .then(res => setProductos(res.data));
+        productosService.listar()
+            .then(data => setProductos(data))
+            .catch(err => {
+                console.error("Error cargando productos:", err);
+                toast.error("No se pudieron cargar los productos");
+            });
 
-    axios.get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/Numero`)
-        .then(res => {
-            const numero = parseInt(res.data.mayor_numero) || 0;
-            setNumeroCotizacion(numero + 1);
-        });
-}, []);
+        const fetchNumero = async () => {
+            const numero = await cotizacionesService.obtenerUltimoNumero();
+            setNumeroCotizacion(numero);
+        };
+
+        fetchNumero();
+    }, []);
 
     const agregarProducto = (opcion) => {
         if (!opcion) return;
@@ -59,7 +71,7 @@ export default function Cotizaciones() {
 
     const guardarCotizacion = async () => {
         try {
-            await axios.post(`${process.env.VITE_API_URL}/api/cotizaciones`, {
+            await cotizacionesService.guardarCotizacion({
                 numero_cotizacion: numeroCotizacion,
                 fecha,
                 cliente_id: clienteId,

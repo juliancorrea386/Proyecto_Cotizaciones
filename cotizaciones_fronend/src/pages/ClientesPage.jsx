@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ClienteForm from "../components/ClienteForm";
-import { getCliente, createCliente, updateCliente, deleteCliente } from "../services/clientesService";
+import clientesService from "../services/clientesService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -15,7 +15,7 @@ export default function ClientesPage() {
 
     const fetchClientes = async () => {
         try {
-            const data = await getCliente();
+            const data = await clientesService.listar();
             setClientes(data);
         } catch (err) {
             console.error("Error al obtener productos:", err);
@@ -34,7 +34,7 @@ export default function ClientesPage() {
 
     const handleDelete = async (id) => {
         if (window.confirm("¿Estás seguro de eliminar este producto?")) {
-            await deleteCliente(id);
+            await clientesService.eliminar(id);
             fetchClientes();
             toast.success("Cotización eliminada con éxito", {
                 position: "top-center",
@@ -52,7 +52,7 @@ export default function ClientesPage() {
         try {
             const clienteExistente = clientes.find(c => c.id === cliente.id);
             if (clienteExistente) {
-                await updateCliente(cliente.id, cliente);
+                await clientesService.actualizar(cliente.id, cliente);
                 toast.success("cliente editado con éxito", {
                     position: "top-center",
                     autoClose: 2500,
@@ -63,7 +63,7 @@ export default function ClientesPage() {
                     theme: "colored"
                 });
             } else {
-                await createCliente(cliente);
+                await clientesService.crear(cliente);
                 toast.success("cliente guardado con éxito", {
                     position: "top-center",
                     autoClose: 2500,
