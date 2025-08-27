@@ -1,6 +1,6 @@
 // App.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ProductosPage from "./pages/ProductosPage";
 import ClientesPage from "./pages/ClientesPage";
 import LoginPage from "./pages/LoginPage";
@@ -14,17 +14,12 @@ import ListaRecibos from "./pages/ListaRecibos";
 import EditarRecibos from "./pages/EditarRecibos";
 import MovimientosPage from "./pages/MovimientosPage";
 import ReporteVentasPage from "./pages/ReporteVentasPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function AppContent() {
-  const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("token");
-
-  if (!isLoggedIn) {
-    navigate("/login");
-    return null;
-  }
-
   return (
     <div className="bg-gray-100 min-h-screen">
+      {/* Barra de navegación */}
       <div className="bg-white shadow p-4 flex gap-4">
         <Link to="/clientes" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Clientes</Link>
         <Link to="/productos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Productos</Link>
@@ -36,11 +31,12 @@ function AppContent() {
         <Link to="/lista-recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Recibos</Link>
         <Link to="/movimientos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Movimientos</Link>
         <Link to="/reporte-ventas" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Ventas</Link>
+
         {/* Botón de cerrar sesión */}
         <button
           onClick={() => {
             localStorage.removeItem("token");
-            navigate("/login");
+            window.location.href = "/login"; // 👈 redirige al login
           }}
           className="ml-auto bg-red-500 text-white px-4 py-2 rounded"
         >
@@ -48,6 +44,7 @@ function AppContent() {
         </button>
       </div>
 
+      {/* Contenido principal */}
       <div className="p-4">
         <Routes>
           <Route path="/clientes" element={<ClientesPage />} />
@@ -72,8 +69,18 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Ruta pública */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/*" element={<AppContent />} />
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <AppContent />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
