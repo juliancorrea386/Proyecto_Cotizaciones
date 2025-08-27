@@ -14,7 +14,7 @@ export default function ListaRecibos() {
 
     const fetchRecibos = (params = {}) => {
         axios
-            .get("http://localhost:4000/api/recibos", { params })
+            .get(`${import.meta.env.VITE_API_URL}/api/recibos`, { params })
             .then((res) => setRecibos(res.data))
             .catch((err) => console.error(err));
     };
@@ -137,7 +137,7 @@ export default function ListaRecibos() {
                                             ❌ Eliminar
                                         </button>
                                         <button
-                                            onClick={() => window.open(`http://localhost:4000/api/recibos/${r.id}/pdf`, "_blank")}
+                                            onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/recibos/${r.id}/pdf`, "_blank")}
                                             className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
                                         >
                                             📄 PDF

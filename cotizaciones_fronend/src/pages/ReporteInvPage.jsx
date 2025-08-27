@@ -10,7 +10,7 @@ export default function ReporteInvPage() {
 
   const generarReporte = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/reportes/inventario", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reportes/inventario`, {
         params: { desde, hasta }
       });
       setReporte(res.data);

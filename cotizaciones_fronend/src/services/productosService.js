@@ -1,7 +1,7 @@
 // src/services/productosService.js
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api/productos"; // Ajusta al puerto de tu backend
+const API_URL = `${import.meta.env.VITE_API_URL}/api/productos`; // Ajusta al puerto de tu backend
 
 export const getProductos = async () => {
   try {

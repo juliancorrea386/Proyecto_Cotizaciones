@@ -18,7 +18,7 @@ const EditarCotizacion = () => {
 
     // Cargar clientes para el select
     useEffect(() => {
-        axios.get("http://localhost:4000/api/clientes")
+        axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`)
             .then(res => setClientes(res.data))
             .catch(() => toast.error("Error al cargar clientes"));
     }, []);
@@ -26,7 +26,7 @@ const EditarCotizacion = () => {
     // Cargar datos de la cotización
     useEffect(() => {
         axios
-            .get(`http://localhost:4000/api/cotizaciones/${id}`)
+            .get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`)
             .then((res) => {
                 const cot = res.data;
                 setNumeroCotizacion(cot.numero_cotizacion);
@@ -52,7 +52,7 @@ const EditarCotizacion = () => {
         }
 
         axios
-            .put(`http://localhost:4000/api/cotizaciones/${id}`, {
+            .put(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`, {
                 numero_cotizacion: numeroCotizacion,
                 fecha,
                 cliente_id: clienteId,

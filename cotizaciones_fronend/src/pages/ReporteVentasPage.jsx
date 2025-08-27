@@ -8,7 +8,7 @@ export default function ReporteVentasPage() {
 
     const fetchReporte = async () => {
         try {
-            const res = await axios.get("http://localhost:4000/api/reportes/ReporteVentas", {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/reportes/ReporteVentas`, {
                 params: { desde, hasta },
             });
             console.log(res.data);
@@ -54,8 +54,7 @@ export default function ReporteVentasPage() {
                     Generar
                 </button>
                 <button
-                    onClick={() => window.open(`http://localhost:4000/api/reportes//reporte-ventas/pdf?desde=${desde}&hasta=${hasta}`, "_blank")}
-                    //onClick={() => window.open(`http://localhost:4000/api/recibos/${r.id}/pdf`, "_blank")}
+                    onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/reportes//reporte-ventas/pdf?desde=${desde}&hasta=${hasta}`, "_blank")}
                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
                 >
                     📄 PDF

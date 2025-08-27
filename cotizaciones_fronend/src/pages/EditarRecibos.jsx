@@ -20,7 +20,7 @@ export default function EditarRecibos() {
     useEffect(() => {
         const fetchClientes = async () => {
             try {
-                const res = await axios.get("http://localhost:4000/api/clientes");
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`);
                 setClientes(res.data);
             } catch (err) {
                 console.error(err);
@@ -32,7 +32,7 @@ export default function EditarRecibos() {
     useEffect(() => {
         const fetchRecibo = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:4000/api/recibos/${id}`);
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/recibos/${id}`);
 
                 setNumeroRecibo(data.numero_recibo);
                 setFecha(data.fecha.split("T")[0]); // formato YYYY-MM-DD
@@ -97,7 +97,7 @@ export default function EditarRecibos() {
                 observacion,
                 detalles: abonos,
             };
-            await axios.put(`http://localhost:4000/api/recibos/${id}`, payload);
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/recibos/${id}`, payload);
             toast.success("✅ Recibo actualizado con éxito");
             setTimeout(() => navigate("/lista-recibos"), 1500); // volver a la lista
         } catch (err) {

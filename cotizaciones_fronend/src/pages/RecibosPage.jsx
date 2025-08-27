@@ -16,8 +16,8 @@ export default function RecibosPage() {
     useEffect(() => {
         const fetchClientes = async () => {
             try {
-                const res = await axios.get("http://localhost:4000/api/clientes");
-                axios.get("http://localhost:4000/api/recibos/Numero").then(res => {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`);
+                axios.get(`${import.meta.env.VITE_API_URL}/api/recibos/Numero`).then(res => {
                     const numero = parseInt(res.data.mayor_numero) || 0;
                     setNumeroRecibo(numero + 1);
                 }
@@ -34,7 +34,7 @@ export default function RecibosPage() {
         if (!clienteId) return;
         const fetchCotizaciones = async () => {
             try {
-                const res = await axios.get(`http://localhost:4000/api/cotizaciones/cliente/${clienteId}`);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/cliente/${clienteId}`);
 
                 const fechaRecibo = fecha; // ya es YYYY-MM-DD
 
@@ -89,7 +89,7 @@ export default function RecibosPage() {
                 observacion,
                 abonos
             };
-            await axios.post("http://localhost:4000/api/recibos", payload);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/recibos`, payload);
             toast.success("✅ Recibo registrado con éxito");
             setClienteId("");
             setObservacion("");

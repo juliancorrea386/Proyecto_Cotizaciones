@@ -12,15 +12,20 @@ export default function Cotizaciones() {
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
     const [tipo, setTipo] = useState("");
     const [busqueda, setBusqueda] = useState("");
+
     useEffect(() => {
-        axios.get("http://localhost:4000/api/clientes").then(res => setClientes(res.data));
-        axios.get("http://localhost:4000/api/productos").then(res => setProductos(res.data));
-        axios.get("http://localhost:4000/api/cotizaciones/Numero").then(res => {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/clientes`)
+        .then(res => setClientes(res.data));
+
+    axios.get(`${import.meta.env.VITE_API_URL}/api/productos`)
+        .then(res => setProductos(res.data));
+
+    axios.get(`${import.meta.env.VITE_API_URL}/api/cotizaciones/Numero`)
+        .then(res => {
             const numero = parseInt(res.data.mayor_numero) || 0;
             setNumeroCotizacion(numero + 1);
-        }
-        )
-    }, []);
+        });
+}, []);
 
     const agregarProducto = (opcion) => {
         if (!opcion) return;
@@ -54,7 +59,7 @@ export default function Cotizaciones() {
 
     const guardarCotizacion = async () => {
         try {
-            await axios.post("http://localhost:4000/api/cotizaciones", {
+            await axios.post(`${process.env.VITE_API_URL}/api/cotizaciones`, {
                 numero_cotizacion: numeroCotizacion,
                 fecha,
                 cliente_id: clienteId,

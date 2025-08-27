@@ -15,7 +15,7 @@ export default function MovimientosPage() {
 
     const fetchMovimientos = (params = {}) => {
         axios
-            .get("http://localhost:4000/api/movimientos", { params })
+            .get(`${import.meta.env.VITE_API_URL}/api/movimientos`, { params })
             .then((res) => setMovimientos(res.data))
             .catch((err) => console.error("Error al obtener movimientos:", err));
     };

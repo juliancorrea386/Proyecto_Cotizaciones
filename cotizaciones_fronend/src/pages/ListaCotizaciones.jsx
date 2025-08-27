@@ -20,7 +20,7 @@ export default function ListaCotizaciones() {
 
     const fetchCotizaciones = (params = {}) => {
         axios
-            .get("http://localhost:4000/api/cotizaciones", { params })
+            .get(`${import.meta.env.VITE_API_URL}/api/cotizaciones`, { params })
             .then((res) => setCotizaciones(res.data))
             .catch((err) => console.error(err));
     };
@@ -28,7 +28,7 @@ export default function ListaCotizaciones() {
     const eliminarCotizacion = (id) => {
         if (window.confirm("¿Seguro que quieres eliminar esta cotización?")) {
             axios
-                .delete(`http://localhost:4000/api/cotizaciones/${id}`)
+                .delete(`${import.meta.env.VITE_API_URL}/api/cotizaciones/${id}`)
                 .then(() => {
                     toast.success("Cotización eliminada con éxito", {
                         position: "top-center",
