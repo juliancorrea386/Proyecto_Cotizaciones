@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../db"); // tu conexión a MySQL
 const router = express.Router();
-
+const verifyToken = require("../middlewares/auth");
 require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
 

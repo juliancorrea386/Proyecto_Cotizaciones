@@ -1,12 +1,17 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import authService from "../services/authService";
 
-export default function ProtectedRoute({ children }) {
-  const isLoggedIn = !!localStorage.getItem("token");
+const ProtectedRoute = ({ children }) => {
+  const token = authService.getToken();
+  const user = authService.getUser();
 
-  if (!isLoggedIn) {
+  // Si no hay token o usuario → redirige al login
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
-}
+  return children; // ✅ muestra la ruta si está logueado
+};
+
+export default ProtectedRoute;

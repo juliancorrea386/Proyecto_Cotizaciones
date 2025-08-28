@@ -16,7 +16,7 @@ import EditarRecibos from "./pages/EditarRecibos";
 import MovimientosPage from "./pages/MovimientosPage";
 import ReporteVentasPage from "./pages/ReporteVentasPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import { Navigate } from "react-router-dom";
 function AppContent() {
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -73,7 +73,8 @@ export default function App() {
         {/* Ruta pública */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Rutas protegidas */}
+        {/* Redirección si abren la raíz */}
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route
           path="/*"
           element={

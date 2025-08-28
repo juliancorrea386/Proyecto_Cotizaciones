@@ -90,6 +90,12 @@ ADD COLUMN numero_recibo VARCHAR(50) NOT NULL;
 ALTER TABLE recibos
 ADD COLUMN cliente_id VARCHAR(20) NOT NULL AFTER id;
 
+ALTER TABLE productos
+ADD COLUMN Referencia INT;
+
+ALTER TABLE productos
+MODIFY COLUMN embalaje VARCHAR(20);
+
 SELECT r.id, r.numero_recibo, r.fecha, r.observacion,
        r.cliente_id,
        cl.nombre AS cliente_nombre, c.subtotal,
