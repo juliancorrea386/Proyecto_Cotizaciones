@@ -6,7 +6,24 @@ const { ref } = require('pdfkit');
 // Obtener todos los productos
 router.get('/', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM productos');
+        const { referencia,nombreProducto } = req.query;
+        let query =`SELECT * 
+                    FROM productos
+                    WHERE 1=1`;
+        const params = [];
+
+        // Filtro por nombre del producto
+        if (nombreProducto) {   
+            query += " AND nombre LIKE ? ";
+            params.push(`%${nombreProducto}%`);
+        }
+        if (referencia) {
+            query += " AND Referencia LIKE ? ";
+            params.push(`%${referencia}%`);
+        }
+        query += " ORDER BY nombre ASC";
+        const [rows] = await pool.query(query, params);
+
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });

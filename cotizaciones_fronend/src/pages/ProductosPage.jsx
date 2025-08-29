@@ -5,11 +5,13 @@ export default function Productos() {
   const [productos, setProductos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [nombreProducto, setNombreProducto] = useState("");
+  const [referencia, setReferencia] = useState("");
   // ✅ Definir fetchData fuera del useEffect
 
-  const fetchData = async () => {
+  const fetchData = async (params = {}) => {
     try {
-      const data = await productosSerive.listar();
+      const data = await productosSerive.listar(params);
       setProductos(data);
     } catch (err) {
       console.error("Error al obtener productos:", err);
@@ -19,6 +21,19 @@ export default function Productos() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const aplicarFiltros = () => {
+    const params = {};
+    if (nombreProducto) params.nombreProducto = nombreProducto;
+    if (referencia) params.referencia = referencia; 
+    fetchData(params);
+  };
+
+  const limpiarFiltros = () => {
+    setNombreProducto("");  
+    setReferencia("");
+    fetchData();
+  };
 
 
   const handleCreate = () => {
@@ -73,6 +88,42 @@ export default function Productos() {
       >
         Nuevo Producto
       </button>
+      <div className="bg-white p-4 rounded-lg shadow mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+                <div>
+                    <label className="block text-gray-700">Nombre Producto:</label>
+                    <input
+                        type="text"
+                        placeholder="Nombre Producto"
+                        value={nombreProducto}
+                        onChange={(e) => setNombreProducto(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Referencia:</label>
+                    <input
+                        type="text"
+                        placeholder="Referencia"
+                        value={referencia}
+                        onChange={(e) => setReferencia(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={aplicarFiltros}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        🔍 Filtrar
+                    </button>
+                    <button
+                        onClick={limpiarFiltros}
+                        className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        ❌ Limpiar
+                    </button>
+                </div>
+            </div>
       <div className="overflow-x-auto shadow-md rounded-lg">
         <table className="w-full border-collapse bg-white">
           <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">

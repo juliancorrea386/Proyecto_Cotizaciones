@@ -4,9 +4,9 @@ import axios from "axios";
 const API_URL = `${import.meta.env.VITE_API_URL}/api/productos`;
 
 const productosService = {
-  listar: async () => {
+  listar: async (params = {}) => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, { params });
       // Aseguramos que siempre devuelva un array
       return Array.isArray(res.data) ? res.data : [res.data];
     } catch (error) {

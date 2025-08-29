@@ -8,18 +8,31 @@ export default function ClientesPage() {
     const [clientes, setClientes] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
-
+    const [nombreCliente, setnombreCliente] = useState("");
+    const [cedula, setCedula] = useState("");
     useEffect(() => {
         fetchClientes();
     }, []);
 
-    const fetchClientes = async () => {
+    const fetchClientes = async (params = {}) => {
         try {
-            const data = await clientesService.listar();
+            const data = await clientesService.listar(params);
             setClientes(data);
         } catch (err) {
             console.error("Error al obtener productos:", err);
         }
+    };
+
+    const aplicarFiltros = () => {
+        const params = {};
+        if (nombreCliente) params.nombreCliente = nombreCliente;
+        if (cedula) params.cedula = cedula;
+        fetchClientes(params);
+    };
+    const limpiarFiltros = () => {
+        setnombreCliente("");
+        setCedula("");
+        fetchClientes();
     };
 
     const handleCreate = () => {
@@ -95,6 +108,42 @@ export default function ClientesPage() {
             >
                 Nuevo Cliente
             </button>
+            <div className="bg-white p-4 rounded-lg shadow mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+                <div>
+                    <label className="block text-gray-700">Nombre:</label>
+                    <input
+                        type="text"
+                        placeholder="Nombre cliente"
+                        value={nombreCliente}
+                        onChange={(e) => setnombreCliente(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Cedula:</label>
+                    <input
+                        type="text"
+                        placeholder="Cedula cliente"
+                        value={cedula}
+                        onChange={(e) => setCedula(e.target.value)}
+                        className="border px-3 py-2 rounded w-full"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        onClick={aplicarFiltros}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        🔍 Filtrar
+                    </button>
+                    <button
+                        onClick={limpiarFiltros}
+                        className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow w-full"
+                    >
+                        ❌ Limpiar
+                    </button>
+                </div>
+            </div>
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="w-full border-collapse bg-white">
                     <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
