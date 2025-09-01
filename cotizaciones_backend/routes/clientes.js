@@ -5,7 +5,7 @@ const pool = require('../db');
 // Listar clientes
 router.get('/', async (req, res) => {
   try {
-    const { cedula,nombreCliente } = req.query;
+    const { cedula, nombreCliente } = req.query;
 
     let query = `
       SELECT id, nombre, telefono, municipio, created_at, updated_at 
@@ -13,22 +13,22 @@ router.get('/', async (req, res) => {
       WHERE 1=1
     `;
     const params = [];
-
     // Filtro por nombre del cliente
-    if (nombreCliente) {
-      query += " AND nombre LIKE ? ";
-      params.push(`%${nombreCliente}%`);
-    }
-
     if (cedula) {
       query += " AND id LIKE ? ";
       params.push(`%${cedula}%`);
     }
 
-    query += " ORDER BY nombre ASC";
+    // Filtro por número de cotización
+    if (nombreCliente) {
+      query += " AND nombre LIKE ? ";
+      params.push(`%${nombreCliente}%`);
+    }
 
+    query += " ORDER BY nombre ASC";
     const [rows] = await pool.query(query, params);
     res.json(rows);
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error al obtener clientes' });
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, nombre, telefono, municipio FROM clientes WHERE id = ?', 
+      'SELECT id, nombre, telefono, municipio FROM clientes WHERE id = ?',
       [req.params.id]
     );
     if (rows.length === 0) return res.status(404).json({ message: 'Cliente no encontrado' });
@@ -60,7 +60,7 @@ router.post('/', async (req, res) => {
     if (exists.length > 0) return res.status(409).json({ message: 'Cliente con esa cédula ya existe' });
 
     await pool.query(
-      'INSERT INTO clientes (id, nombre, telefono, municipio) VALUES (?, ?, ?, ?)', 
+      'INSERT INTO clientes (id, nombre, telefono, municipio) VALUES (?, ?, ?, ?)',
       [id, nombre, telefono, municipio]
     );
 
@@ -78,7 +78,7 @@ router.put('/:id', async (req, res) => {
     if (!nombre) return res.status(400).json({ message: 'nombre es requerido' });
 
     const [result] = await pool.query(
-      'UPDATE clientes SET nombre = ?, telefono = ?, municipio = ? WHERE id = ?', 
+      'UPDATE clientes SET nombre = ?, telefono = ?, municipio = ? WHERE id = ?',
       [nombre, telefono, municipio, req.params.id]
     );
 

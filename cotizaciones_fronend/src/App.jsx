@@ -16,6 +16,7 @@ import EditarRecibos from "./pages/EditarRecibos";
 import MovimientosPage from "./pages/MovimientosPage";
 import ReporteVentasPage from "./pages/ReporteVentasPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CarteraPage from "./pages/CarteraPage";
 import { Navigate } from "react-router-dom";
 function AppContent() {
   return (
@@ -32,7 +33,7 @@ function AppContent() {
         <Link to="/lista-recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Recibos</Link>
         <Link to="/movimientos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Movimientos</Link>
         <Link to="/reporte-ventas" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Ventas</Link>
-
+        <Link to="/cartera" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Cartera</Link>
         {/* Botón de cerrar sesión */}
         <button
           onClick={() => {
@@ -60,6 +61,7 @@ function AppContent() {
           <Route path="/editar-recibo/:id" element={<EditarRecibos />} />
           <Route path="/movimientos" element={<MovimientosPage />} />
           <Route path="/reporte-ventas" element={<ReporteVentasPage />} />
+          <Route path="/cartera" element={<CarteraPage />} />
         </Routes>
       </div>
     </div>
