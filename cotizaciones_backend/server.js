@@ -32,6 +32,9 @@ app.use("/api/movimientos", movimientosRoutes);
 const carteraRoutes = require("./routes/cartera");
 app.use("/api/cartera", carteraRoutes);
 
+const municipiosRoutes = require('./routes/municipios');
+app.use('/api/municipios', municipiosRoutes);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`API de clientes escuchando en http://localhost:${PORT}`);

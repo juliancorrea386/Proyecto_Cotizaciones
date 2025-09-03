@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import municipiosService from "../services/municipiosService";
 const ClienteForm = ({ cliente, onSave, onClose }) => {
   const [formData, setFormData] = useState({
     id: "",
@@ -7,21 +7,20 @@ const ClienteForm = ({ cliente, onSave, onClose }) => {
     telefono: "",
     municipio: "",
   });
+  const [municipios, setMunicipios] = useState([]);
 
-  const [filtroMunicipio, setFiltroMunicipio] = useState("");
 
-  const municipios = [
-    "Florencia",
-    "Morelia",
-    "Belen",
-    "San Jose",
-    "Yurayaco",
-    "La montañita",
-    "Paujil",
-    "Puerto Rico",
-    "San Vicente del Caguan",
-    "Cartagena del Chaira",
-  ];
+  useEffect(() => {
+    try {
+      const fetchMunicipios = async () => {
+        const data = await municipiosService.getMunicipios();
+        setMunicipios(data);
+      };
+      fetchMunicipios();
+    } catch (err) {
+      console.error("Error al obtener municipios:", err);
+    }
+  }, []);
 
   useEffect(() => {
     if (cliente) {
@@ -30,7 +29,7 @@ const ClienteForm = ({ cliente, onSave, onClose }) => {
         cedula: cliente.cedula || "",
         nombre: cliente.nombre || "",
         telefono: cliente.telefono || "",
-        municipio: cliente.municipio || "",
+        municipio: cliente.municipio_id ? String(cliente.municipio_id) : "",
       });
     } else {
       setFormData({
@@ -43,6 +42,7 @@ const ClienteForm = ({ cliente, onSave, onClose }) => {
     }
   }, [cliente]);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -52,10 +52,6 @@ const ClienteForm = ({ cliente, onSave, onClose }) => {
     e.preventDefault();
     onSave(formData);
   };
-
-  const municipiosFiltrados = municipios.filter((m) =>
-    m.toLowerCase().includes(filtroMunicipio.toLowerCase())
-  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -98,9 +94,9 @@ const ClienteForm = ({ cliente, onSave, onClose }) => {
             className="border p-2 w-full mb-2"
           >
             <option value="">Seleccione un municipio</option>
-            {municipiosFiltrados.map((m, i) => (
-              <option key={i} value={m}>
-                {m}
+            {municipios.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nombre}
               </option>
             ))}
           </select>
