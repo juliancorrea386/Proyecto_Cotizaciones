@@ -15,7 +15,6 @@ export default function ClientesPage() {
     }, []);
 
     const fetchClientes = async (params = {}) => {
-        console.log("Fetching clientes with params:", params);
         try {
             const data = await clientesService.listar(params);
             setClientes(data);
