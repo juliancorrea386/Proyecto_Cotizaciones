@@ -172,13 +172,13 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { numero_cotizacion, fecha, cliente_id, tipo, productos } = req.body;
-
+    
     try {
         const subtotal = productos.reduce((acc, p) => acc + (p.precio_venta * p.cantidad), 0);
-
+        const total = subtotal;
         await pool.query(
-            `UPDATE cotizaciones SET numero_cotizacion = ?, fecha = ?, cliente_id = ?, tipo = ?, subtotal = ? WHERE id = ?`,
-            [numero_cotizacion, fecha, cliente_id, tipo, subtotal, id]
+            `UPDATE cotizaciones SET numero_cotizacion = ?, fecha = ?, cliente_id = ?, tipo = ?, subtotal = ?, total = ? WHERE id = ?`,
+            [numero_cotizacion, fecha, cliente_id, tipo, subtotal, total, id]
         );
 
         // Borrar productos anteriores

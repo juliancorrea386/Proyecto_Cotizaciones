@@ -1,11 +1,11 @@
 // src/pages/EditarCotizacion.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import clientesService from "../services/clientesService";
 import productosService from "../services/productosService";
 import cotizacionesService from "../services/cotizacionesService";
+import Select from "react-select";
 const EditarCotizacion = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -17,7 +17,14 @@ const EditarCotizacion = () => {
     const [clientes, setClientes] = useState([]);
     const [tipo, setTipo] = useState("contado");
     const [productos, setProductos] = useState([]);
+    const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+    const [productosCatalogo, setProductosCatalogo] = useState([]);
 
+    useEffect(() => {
+        productosService.listar()
+            .then(res => setProductosCatalogo(res))
+            .catch(() => toast.error("Error al cargar productos"));
+    }, []);
     // Cargar clientes para el select
     useEffect(() => {
         clientesService.listar()
@@ -86,6 +93,30 @@ const EditarCotizacion = () => {
         0
     );
 
+    const agregarProducto = (opcion) => {
+        if (!opcion) return;
+
+        const producto = opcion.data; // 👈 ya tenemos el objeto real aquí
+
+        // Evitar duplicados
+        if (productos.some(p => p.id === producto.id)) {
+            toast.warning("Este producto ya fue agregado");
+            return;
+        }
+
+        // Agregar al array principal
+        setProductos(prev => [
+            ...prev,
+            {
+                id: producto.id,
+                nombre: producto.nombre,
+                precio_venta: producto.precio_venta,
+                cantidad: 1,
+            },
+        ]);
+    };
+
+
     if (loading) return <p className="p-4">Cargando...</p>;
 
     return (
@@ -152,6 +183,19 @@ const EditarCotizacion = () => {
                     </select>
                 </div>
             </div>
+            <h3 className="text-lg font-semibold mt-4 mb-2">Productos</h3>
+
+            <Select
+                options={productosCatalogo.map(p => ({
+                    value: p.id,
+                    label: `${p.nombre} - $${p.precio_venta}`,
+                    data: p, // 👈 aquí paso el objeto completo
+                }))}
+                onChange={agregarProducto}
+                placeholder="🔍 Buscar producto..."
+            />
+
+
 
             {/* Detalle de cotización */}
             <div>
@@ -166,6 +210,7 @@ const EditarCotizacion = () => {
                                 <th className="border p-3 text-center text-sm font-medium text-gray-600">Precio</th>
                                 <th className="border p-3 text-center text-sm font-medium text-gray-600">Cantidad</th>
                                 <th className="border p-3 text-center text-sm font-medium text-gray-600">Total</th>
+                                <th className="border p-3 text-center text-sm font-medium text-gray-600">Accion</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -195,9 +240,20 @@ const EditarCotizacion = () => {
                                     <td className="border p-3 text-center font-medium text-gray-700">
                                         ${(p.precio_venta * p.cantidad).toFixed(2)}
                                     </td>
+                                    <td className="border p-3 text-center">
+                                        <button
+                                            onClick={() =>
+                                                setProductos(productos.filter((_, index) => index !== i))
+                                            }
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
                 </div>
             </div>
