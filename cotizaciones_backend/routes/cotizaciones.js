@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
         let query = `
             SELECT
                 c.id,
-                c.fecha,
+                DATE_FORMAT(c.fecha, '%d-%m-%Y') AS fecha,
                 c.tipo,
                 c.numero_cotizacion,
                 cli.nombre AS cliente,

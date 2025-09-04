@@ -175,12 +175,7 @@ export default function ListaCotizaciones() {
                                     <td className="p-3">{c.numero_cotizacion}</td>
                                     <td className="p-3">{c.cliente}</td>
                                     <td className="p-3">
-                                        {new Date(c.fecha).toLocaleDateString("es-CO", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                            year: "numeric",
-                                            timeZone: "America/Bogota",
-                                        })}
+                                        {c.fecha}
                                     </td>
                                     <td className="p-3 text-left font-semibold">
                                         {new Intl.NumberFormat("es-CO", {
