@@ -1,7 +1,6 @@
 // App.jsx
-// src/App.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import ProductosPage from "./pages/ProductosPage";
 import ClientesPage from "./pages/ClientesPage";
 import LoginPage from "./pages/LoginPage";
@@ -18,36 +17,59 @@ import ReporteVentasPage from "./pages/ReporteVentasPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarteraPage from "./pages/CarteraPage";
 import { Navigate } from "react-router-dom";
+
+function Navbar() {
+  const location = useLocation();
+  const links = [
+    { to: "/clientes", label: "Clientes" },
+    { to: "/productos", label: "Productos" },
+    { to: "/cotizaciones", label: "Cotizaciones" },
+    { to: "/lista-cotizaciones", label: "Lista Cotizaciones" },
+    { to: "/usuarios", label: "Usuarios" },
+    { to: "/reporte-inventario", label: "Reporte Inventario" },
+    { to: "/recibos", label: "Recibos" },
+    { to: "/lista-recibos", label: "Lista Recibos" },
+    { to: "/movimientos", label: "Movimientos" },
+    { to: "/reporte-ventas", label: "Reporte Ventas" },
+    { to: "/cartera", label: "Cartera" },
+  ];
+
+  return (
+    <nav className="sticky top-0 z-50 bg-white shadow-md px-6 py-3 flex items-center gap-3">
+      {links.map((link) => (
+        <Link
+          key={link.to}
+          to={link.to}
+          className={`px-4 py-2 rounded-md transition-colors ${
+            location.pathname === link.to
+              ? "bg-blue-600 text-white shadow"
+              : "bg-gray-100 text-gray-700 hover:bg-blue-100"
+          }`}
+        >
+          {link.label}
+        </Link>
+      ))}
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }}
+        className="ml-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-full shadow"
+      >
+        Cerrar sesión
+      </button>
+    </nav>
+  );
+}
+
 function AppContent() {
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* Barra de navegación */}
-      <div className="bg-white shadow p-4 flex gap-4">
-        <Link to="/clientes" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Clientes</Link>
-        <Link to="/productos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Productos</Link>
-        <Link to="/cotizaciones" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Cotizaciones</Link>
-        <Link to="/lista-cotizaciones" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Cotizaciones</Link>
-        <Link to="/usuarios" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Usuarios</Link>
-        <Link to="/reporte-inventario" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Inventario</Link>
-        <Link to="/recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Recibos</Link>
-        <Link to="/lista-recibos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Lista Recibos</Link>
-        <Link to="/movimientos" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Movimientos</Link>
-        <Link to="/reporte-ventas" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Reporte Ventas</Link>
-        <Link to="/cartera" className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white">Cartera</Link>
-        {/* Botón de cerrar sesión */}
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            window.location.href = "/login"; // 👈 redirige al login
-          }}
-          className="ml-auto bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Cerrar sesión
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200">
+      <Navbar />
 
       {/* Contenido principal */}
-      <div className="p-4">
+      <div className="p-6">
         <Routes>
           <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/productos" element={<ProductosPage />} />

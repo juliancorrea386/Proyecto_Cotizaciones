@@ -96,6 +96,37 @@ ADD COLUMN Referencia INT;
 ALTER TABLE productos
 MODIFY COLUMN embalaje VARCHAR(20);
 
+CREATE TABLE municipios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+INSERT INTO municipios (nombre) VALUES
+('Florencia'),
+('Morelia'),
+('Belén'),
+('San José'),
+('Yurayaco'),
+('La Montañita'),
+('Paujil'),
+('Puerto Rico'),
+('San Vicente del Caguán'),
+('Cartagena del Chairá'),
+('El Doncello');
+
+ALTER TABLE clientes ADD municipio_id INT;
+
+ALTER TABLE clientes
+ADD CONSTRAINT fk_municipio_cliente
+FOREIGN KEY (municipio_id) REFERENCES municipios(id);
+
+UPDATE clientes c
+JOIN municipios m ON c.municipio = m.nombre
+SET c.municipio_id = m.id;
+
+ALTER TABLE clientes DROP COLUMN municipio;
+
+
 SELECT r.id, r.numero_recibo, r.fecha, r.observacion,
        r.cliente_id,
        cl.nombre AS cliente_nombre, c.subtotal,

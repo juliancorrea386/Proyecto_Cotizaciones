@@ -212,4 +212,48 @@ router.get("/cliente/:clienteId", async (req, res) => {
     }
 });
 
+// Obtener cotización con detalles
+router.get("/:id/detalle", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Info principal de la cotización
+    const [cotizaciones] = await pool.query(
+      `SELECT co.id, co.numero_cotizacion, co.fecha, co.tipo, co.tipo_pago, 
+              co.subtotal, co.total, co.saldo,
+              c.id AS cliente_id, c.nombre AS cliente_nombre
+       FROM cotizaciones co
+       INNER JOIN clientes c ON c.id = co.cliente_id
+       WHERE co.id = ?`,
+      [id]
+    );
+
+    if (cotizaciones.length === 0) {
+      return res.status(404).json({ error: "Cotización no encontrada" });
+    }
+
+    const cotizacion = cotizaciones[0];
+
+    // Detalles de productos
+    const [detalles] = await pool.query(
+      `SELECT p.nombre AS producto_nombre, d.precio_venta AS precio_unitario, 
+              d.cantidad, (d.precio_venta * d.cantidad) AS total
+       FROM cotizacion_detalles d
+       INNER JOIN productos p ON p.id = d.producto_id
+       WHERE d.cotizacion_id = ?`,
+      [id]
+    );
+
+    res.json({
+      ...cotizacion,
+      detalles,
+    });
+  } catch (err) {
+    console.error("Error obteniendo detalle de cotización:", err);
+    res.status(500).json({ error: "Error al obtener cotización" });
+  }
+});
+
+
+
 module.exports = router;

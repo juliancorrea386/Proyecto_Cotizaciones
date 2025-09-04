@@ -4,6 +4,8 @@ import carteraService from "../services/carteraService";
 import Select from "react-select";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import municipiosService from "../services/municipiosService";
+
 export default function CarteraPage() {
     const [cartera, setCartera] = useState([]);
     const [nombreCliente, setNombreCliente] = useState("");
@@ -11,16 +13,28 @@ export default function CarteraPage() {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [municipiosSeleccionados, setMunicipiosSeleccionados] = useState([]);
+    const [municipios, setMunicipios] = useState([]);
     useEffect(() => {
         fetchCartera();
+        fetchMunicipios();
     }, []);
 
     const fetchCartera = async (params = {}) => {
         try {
+            console.log("Fetching cartera with params:", params);
             const res = await carteraService.listar(params);
             setCartera(res);
         } catch (err) {
             console.error("Error cargando cartera:", err);
+        }
+    };
+
+    const fetchMunicipios = async () => {
+        try {
+            const data = await municipiosService.getMunicipios();
+            setMunicipios(data);
+        } catch (err) {
+            console.error("Error al obtener municipios:", err);
         }
     };
 
@@ -42,23 +56,10 @@ export default function CarteraPage() {
         setMunicipiosSeleccionados([]);
         fetchCartera();
     };
-
-    const municipios = [
-        "Florencia",
-        "Morelia",
-        "Belen",
-        "San Jose",
-        "Yurayaco",
-        "La montañita",
-        "Paujil",
-        "Puerto Rico",
-        "San Vicente del Caguan",
-        "Cartagena del Chaira",
-    ];
-
+    
     const municipiosOptions = municipios.map((muni) => ({
-        value: muni,
-        label: muni,
+        value: muni.id,
+        label: muni.nombre,
     }));
 
     const exportarPDF = () => {

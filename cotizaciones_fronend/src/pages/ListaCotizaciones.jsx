@@ -217,6 +217,21 @@ export default function ListaCotizaciones() {
                                         >
                                             ❌ Eliminar
                                         </button>
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    const cotizacionCompleta = await cotizacionesService.obtenerDetalle(c.id);
+                                                    cotizacionesService.exportarCotizacionPDF(cotizacionCompleta); // 👈 función que genera el PDF
+                                                } catch (err) {
+                                                    console.error("Error al generar PDF:", err);
+                                                    toast.error("Error al generar el PDF");
+                                                }
+                                            }}
+                                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
+                                        >
+                                            📄 PDF
+                                        </button>
+
                                     </td>
                                 </tr>
                             ))
