@@ -179,6 +179,7 @@ export default function ListaCotizaciones() {
                                             day: "2-digit",
                                             month: "2-digit",
                                             year: "numeric",
+                                            timeZone: "America/Bogota",
                                         })}
                                     </td>
                                     <td className="p-3 text-left font-semibold">
