@@ -136,7 +136,7 @@ export default function MovimientosPage() {
                                     <td className="p-3">{m.numero_cotizacion}</td>
                                     <td className="p-3">{m.cliente}</td>
                                     <td className="p-3">
-                                        {new Date(m.fecha_cotizacion).toLocaleDateString("es-ES")}
+                                        {m.fecha_cotizacion}
                                     </td>
                                     <td className="p-3 capitalize">{m.tipo}</td>
                                     <td className="p-3 text-right font-semibold">

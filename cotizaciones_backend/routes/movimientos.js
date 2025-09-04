@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
                 c.id AS cotizacion_id,
                 c.numero_cotizacion,
                 c.tipo,
-                c.fecha AS fecha_cotizacion,
+                DATE_FORMAT(c.fecha, '%d-%m-%Y') AS fecha_cotizacion,
                 cli.nombre AS cliente,
                 c.subtotal,
 
