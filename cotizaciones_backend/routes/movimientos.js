@@ -24,8 +24,8 @@ router.get("/", async (req, res) => {
 
                 CASE 
                     WHEN c.tipo = 'contado' AND rdet.id IS NULL 
-                    THEN c.fecha
-                    ELSE r.fecha
+                    THEN DATE_FORMAT(c.fecha, '%d-%m-%Y')
+                    ELSE DATE_FORMAT(r.fecha, '%d-%m-%Y')
                 END AS fecha_abono,
 
                 CASE 
@@ -85,6 +85,7 @@ router.get("/", async (req, res) => {
         query += ` ORDER BY c.fecha ASC, r.fecha ASC`;
 
         const [rows] = await pool.query(query, params);
+        console.log(rows);
         res.json(rows);
     } catch (error) {
         console.error("Error al obtener movimientos:", error);

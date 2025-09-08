@@ -153,7 +153,7 @@ export default function MovimientosPage() {
                                             <>
                                                 <span className="block text-sm text-gray-500">
                                                     Recibo #{m.recibo_id} -{" "}
-                                                    {new Date(m.fecha_abono).toLocaleDateString("es-ES")}
+                                                    {m.fecha_abono}
                                                 </span>
                                                 <span className="font-semibold text-green-600">
                                                     {new Intl.NumberFormat("es-CO", {
