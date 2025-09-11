@@ -8,9 +8,9 @@ export default function ReporteInvPage() {
   const [hasta, setHasta] = useState("");
   const [reporte, setReporte] = useState([]);
 
-  const generarReporte = async (params = {desde,hasta}) => {
+  const generarReporte = async () => {
     try {
-      const res = await reportesService.getReporteInv(params);
+      const res = await reportesService.getReporteInv({desde, hasta});
       setReporte(res);
     } catch (err) {
       console.error(err);

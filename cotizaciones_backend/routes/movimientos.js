@@ -82,10 +82,8 @@ router.get("/", async (req, res) => {
             params.push(`%${numero_recibo}%`);
         }
         
-        query += ` ORDER BY c.fecha ASC, r.fecha ASC`;
-
+        query += ` ORDER BY c.fecha ASC, r.fecha, c.numero_cotizacion ASC`;
         const [rows] = await pool.query(query, params);
-        console.log(rows);
         res.json(rows);
     } catch (error) {
         console.error("Error al obtener movimientos:", error);
