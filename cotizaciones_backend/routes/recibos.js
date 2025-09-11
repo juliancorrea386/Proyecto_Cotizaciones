@@ -63,7 +63,10 @@ router.get("/", async (req, res) => {
   try {
     const { desde, hasta, cliente, numero } = req.query;
     let query = `
-      SELECT r.id, r.numero_recibo, r.fecha, r.observacion,
+      SELECT r.id, 
+             r.numero_recibo,
+             DATE_FORMAT(r.fecha, '%d-%m-%Y') AS fecha,
+             r.observacion,
             r.cliente_id,
             cl.nombre AS cliente_nombre,
             COALESCE(SUM(rd.valor), 0) AS total_abonos
@@ -101,6 +104,7 @@ router.get("/", async (req, res) => {
 
     const [rows] = await db.query(query, params);
     res.json(rows);
+    console.log(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error al listar recibos" });

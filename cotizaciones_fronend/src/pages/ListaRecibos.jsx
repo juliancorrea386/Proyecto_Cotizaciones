@@ -111,11 +111,7 @@ export default function ListaRecibos() {
                             recibos.map((r) => (
                                 <tr key={r.id} className="hover:bg-gray-100">
                                     <td className="p-3 border text-center">{r.numero_recibo}</td>
-                                    <td className="p-3 border text-center">{new Date(r.fecha).toLocaleDateString("es-ES", {
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                    })}</td>
+                                    <td className="p-3 border text-center">{r.fecha}</td>
                                     <td className="p-3 border text-center">{r.cliente_nombre || "—"}</td>
                                     <td className="p-3 border text-center">
                                         {new Intl.NumberFormat("es-CO", {

@@ -203,7 +203,7 @@ router.get("/cliente/:clienteId", async (req, res) => {
     const { clienteId } = req.params;
     try {
         const [rows] = await pool.query(
-            "SELECT id, numero_cotizacion, fecha, saldo FROM cotizaciones WHERE cliente_id = ? AND saldo > 0 AND tipo = 'credito'",
+            "SELECT id, numero_cotizacion, DATE_FORMAT(fecha, '%d-%m-%Y') AS fecha, saldo FROM cotizaciones WHERE cliente_id = ? AND saldo > 0 AND tipo = 'credito'",
             [clienteId]
         );
         res.json(rows);

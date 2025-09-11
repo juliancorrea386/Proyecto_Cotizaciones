@@ -220,9 +220,7 @@ export default function RecibosPage() {
                         </select>
                       </td>
                       <td className="p-3 text-center">
-                        {cot
-                          ? new Date(cot.fecha).toLocaleDateString("es-CO")
-                          : "-"}
+                        {cot? cot.fecha : "-"}
                       </td>
                       <td className="p-3 text-center">
                         {cot
