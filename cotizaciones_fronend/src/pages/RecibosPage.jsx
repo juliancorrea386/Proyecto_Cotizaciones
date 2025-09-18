@@ -39,11 +39,11 @@ export default function RecibosPage() {
         const todasCotizaciones = await cotizacionesService.obtenerPorCliente(
           clienteId
         );
-
         const fechaRecibo = fecha;
         const cotizacionesFiltradas = todasCotizaciones.filter((cot) => {
-          const fechaCot = new Date(cot.fecha).toISOString().split("T")[0];
-          return fechaCot <= fechaRecibo;
+          const [dia, mes, anio] = cot.fecha.split("-");
+          const fechaCot = new Date(`${anio}-${mes}-${dia}`); // convertimos a YYYY-MM-DD
+          return fechaCot <= new Date(fecha);
         });
 
         setCotizaciones(cotizacionesFiltradas);
@@ -195,9 +195,8 @@ export default function RecibosPage() {
                   return (
                     <tr
                       key={index}
-                      className={`border-t ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
+                      className={`border-t ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        }`}
                     >
                       <td className="p-3 text-center">
                         <select
@@ -220,15 +219,15 @@ export default function RecibosPage() {
                         </select>
                       </td>
                       <td className="p-3 text-center">
-                        {cot? cot.fecha : "-"}
+                        {cot ? cot.fecha : "-"}
                       </td>
                       <td className="p-3 text-center">
                         {cot
                           ? new Intl.NumberFormat("es-CO", {
-                              style: "currency",
-                              currency: "COP",
-                              minimumFractionDigits: 0,
-                            }).format(cot.saldo)
+                            style: "currency",
+                            currency: "COP",
+                            minimumFractionDigits: 0,
+                          }).format(cot.saldo)
                           : "-"}
                       </td>
                       <td className="p-3 text-center">
@@ -237,10 +236,10 @@ export default function RecibosPage() {
                           value={
                             abono.valor
                               ? new Intl.NumberFormat("es-CO", {
-                                  style: "currency",
-                                  currency: "COP",
-                                  minimumFractionDigits: 0,
-                                }).format(abono.valor)
+                                style: "currency",
+                                currency: "COP",
+                                minimumFractionDigits: 0,
+                              }).format(abono.valor)
                               : ""
                           }
                           onChange={(e) => {
