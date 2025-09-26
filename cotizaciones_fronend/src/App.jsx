@@ -17,6 +17,7 @@ import ReporteVentasPage from "./pages/ReporteVentasPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarteraPage from "./pages/CarteraPage";
 import { Navigate } from "react-router-dom";
+
 function Navbar() {
   const location = useLocation();
   const links = [
