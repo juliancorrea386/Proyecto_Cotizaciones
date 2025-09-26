@@ -141,7 +141,7 @@ router.get("/movimientos-productos/:productoId", async (req, res) => {
     const [rows] = await pool.query(
       `SELECT 
           c.numero_cotizacion,
-          c.fecha,
+          DATE_FORMAT(c.fecha, '%d-%m-%Y') AS fecha,
           cli.nombre AS cliente,
           cd.cantidad,
           cd.precio_venta,

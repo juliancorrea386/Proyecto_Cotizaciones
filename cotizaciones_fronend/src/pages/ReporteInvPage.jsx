@@ -153,7 +153,7 @@ export default function ReporteInvPage() {
                                 <tr key={idx} className="hover:bg-white transition">
                                   <td className="border px-3 py-2">{d.numero_cotizacion}</td>
                                   <td className="border px-3 py-2">
-                                    {new Date(d.fecha).toLocaleDateString("es-CO")}
+                                    {d.fecha}
                                   </td>
                                   <td className="border px-3 py-2">{d.cliente}</td>
                                   <td className="border px-3 py-2 text-center">{d.cantidad}</td>
