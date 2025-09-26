@@ -26,6 +26,15 @@ const reportesService = {
             };
         }
     },
+    getMovimientosProducto: async (productoId, params = {}) => {
+        try {
+            const res = await axios.get(`${API_URL}/movimientos-productos/${productoId}`, { params });
+            return Array.isArray(res.data) ? res.data : [res.data];
+        } catch (err) {
+            console.error("Error al obtener movimientos del producto:", err);
+            return [];
+        }
+    },
 };
 
 export default reportesService;

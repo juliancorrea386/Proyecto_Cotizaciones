@@ -113,7 +113,7 @@ router.get('/', async (req, res) => {
                 query += " AND saldo > 0 AND saldo < subtotal ";
             }
         }
-        query += " ORDER BY c.id ASC";
+        query += " ORDER BY c.numero_cotizacion, fecha ASC";
 
         const [rows] = await pool.query(query, params);
         res.json(rows);

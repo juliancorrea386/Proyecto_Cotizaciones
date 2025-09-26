@@ -99,4 +99,68 @@ router.get("/ReporteVentas", async (req, res) => {
   }
 });
 
+router.get("/movimientos-productos", async (req, res) => {
+  try {
+    const { desde, hasta } = req.query;
+    if (!desde || !hasta) {
+      return res.status(400).json({ error: "Se requieren fechas desde y hasta" });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT 
+          p.id AS producto_id,
+          p.nombre AS producto,
+          SUM(cd.cantidad) AS cantidad_total,
+          SUM(cd.cantidad * cd.precio_venta) AS valor_total
+       FROM cotizacion_detalles cd
+       JOIN productos p ON cd.producto_id = p.id
+       JOIN cotizaciones c ON c.id = cd.cotizacion_id
+       WHERE DATE(c.fecha) BETWEEN ? AND ?
+       GROUP BY p.id, p.nombre
+       ORDER BY cantidad_total DESC`,
+      [desde, hasta]
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error en reporte de movimientos:", error);
+    res.status(500).json({ error: "Error en servidor" });
+  }
+});
+
+// GET /api/reportes/movimientos-productos/:productoId
+router.get("/movimientos-productos/:productoId", async (req, res) => {
+  try {
+    const { desde, hasta } = req.query;
+    const { productoId } = req.params;
+
+    if (!desde || !hasta) {
+      return res.status(400).json({ error: "Se requieren fechas desde y hasta" });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT 
+          c.numero_cotizacion,
+          c.fecha,
+          cli.nombre AS cliente,
+          cd.cantidad,
+          cd.precio_venta,
+          (cd.cantidad * cd.precio_venta) AS subtotal
+       FROM cotizacion_detalles cd
+       JOIN cotizaciones c ON c.id = cd.cotizacion_id
+       JOIN clientes cli ON cli.id = c.cliente_id
+       WHERE cd.producto_id = ?
+         AND DATE(c.fecha) BETWEEN ? AND ?
+       ORDER BY c.fecha ASC`,
+      [productoId, desde, hasta]
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error en detalle de movimientos:", error);
+    res.status(500).json({ error: "Error en servidor" });
+  }
+});
+
+
 module.exports = router;

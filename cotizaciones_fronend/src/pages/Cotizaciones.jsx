@@ -7,7 +7,7 @@ import clientesService from "../services/clientesService";
 import productosService from "../services/productosService";
 import cotizacionesService from "../services/cotizacionesService";
 export default function Cotizaciones() {
-    const [fecha, setFecha] = useState("");
+    const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
     const [numeroCotizacion, setNumeroCotizacion] = useState("");
     const [clientes, setClientes] = useState([]);
     const [clienteId, setClienteId] = useState("");
@@ -90,7 +90,6 @@ export default function Cotizaciones() {
             });
 
             // 🔹 Limpiar todos los campos después de guardar
-            setFecha("");
             setNumeroCotizacion(numeroCotizacion + 1);
             setClienteId("");
             setTipo("");
