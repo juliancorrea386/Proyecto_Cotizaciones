@@ -191,8 +191,19 @@ export default function ReporteInvPage() {
               ))
             )}
           </tbody>
+          {/* ✅ Total general de productos vendidos */}
+          <tr className="bg-blue-100 font-bold">
+            <td colSpan="2" className="border px-3 py-2 text-right">
+              Total general
+            </td>
+            <td className="border px-3 py-2 text-center text-blue-700">
+              {reporte.reduce((sum, r) => sum + Number(r.total_salidas), 0).toLocaleString()}
+            </td>
+            <td></td>
+          </tr>
         </table>
+
       </div>
-    </div>
+    </div >
   );
 }

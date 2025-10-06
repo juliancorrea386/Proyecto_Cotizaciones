@@ -8,16 +8,14 @@ export default function ListaRecibos() {
     const [fechaFin, setFechaFin] = useState("");
     const [cliente, setCliente] = useState("");
     const [numeroRecibo, setNumeroRecibo] = useState("");
+    const [filtroAplicado, setFiltroAplicado] = useState(false);
     const navigate = useNavigate();
-    useEffect(() => {
-        fetchRecibos();
-    }, []);
 
     const fetchRecibos = (params = {}) => {
-       recibosService
-      .listar(params)
-      .then((data) => setRecibos(data))
-      .catch((err) => console.error(err));
+        recibosService
+            .listar(params)
+            .then((data) => setRecibos(data))
+            .catch((err) => console.error(err));
     };
 
     const aplicarFiltros = () => {
@@ -26,7 +24,7 @@ export default function ListaRecibos() {
         if (fechaFin) params.hasta = fechaFin;
         if (cliente) params.cliente = cliente;
         if (numeroRecibo) params.numero = numeroRecibo;
-
+        setFiltroAplicado(true);
         fetchRecibos(params);
     };
     const limpiarFiltros = () => {
@@ -34,6 +32,7 @@ export default function ListaRecibos() {
         setFechaFin("");
         setCliente("");
         setNumeroRecibo("");
+        setFiltroAplicado(false);
         fetchRecibos(); // recargar todas
     };
     return (
@@ -95,86 +94,94 @@ export default function ListaRecibos() {
                 </div>
             </div>
             {/* Tabla de recibos */}
-            <div className="overflow-x-auto shadow-md rounded-lg">
-                <table className="w-full border-collapse bg-white">
-                    <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                        <tr>
-                            <th className="p-3 text-center">Número</th>
-                            <th className="p-3 text-center">Fecha</th>
-                            <th className="p-3 text-center">Cliente</th>
-                            <th className="p-3 text-center">Total Abonos</th>
-                            <th className="p-3 text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {recibos.length > 0 ? (
-                            recibos.map((r) => (
-                                <tr key={r.id} className="hover:bg-gray-100">
-                                    <td className="p-3 border text-center">{r.numero_recibo}</td>
-                                    <td className="p-3 border text-center">{r.fecha}</td>
-                                    <td className="p-3 border text-center">{r.cliente_nombre || "—"}</td>
-                                    <td className="p-3 border text-center">
+            {filtroAplicado ? (
+                <div className="overflow-x-auto shadow-md rounded-lg">
+                    <table className="w-full border-collapse bg-white">
+                        <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                            <tr>
+                                <th className="p-3 text-center">Número</th>
+                                <th className="p-3 text-center">Fecha</th>
+                                <th className="p-3 text-center">Cliente</th>
+                                <th className="p-3 text-center">Total Abonos</th>
+                                <th className="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {recibos.length > 0 ? (
+                                recibos.map((r) => (
+                                    <tr key={r.id} className="hover:bg-gray-100">
+                                        <td className="p-3 border text-center">{r.numero_recibo}</td>
+                                        <td className="p-3 border text-center">{r.fecha}</td>
+                                        <td className="p-3 border text-center">{r.cliente_nombre || "—"}</td>
+                                        <td className="p-3 border text-center">
+                                            {new Intl.NumberFormat("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                                minimumFractionDigits: 0,
+                                            }).format(r.total_abonos || 0)}
+                                        </td>
+                                        <td className="p-3 border text-center space-x-2">
+                                            <button
+                                                onClick={() => navigate(`/editar-recibo/${r.id}`)}
+                                                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition"
+                                            >
+                                                ✏️ Editar
+                                            </button>
+                                            <button
+                                                onClick={() => eliminarCotizacion(c.id)}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition"
+                                            >
+                                                ❌ Eliminar
+                                            </button>
+                                            <button
+                                                onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/recibos/${r.id}/pdf`, "_blank")}
+                                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
+                                            >
+                                                📄 PDF
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="p-3 text-center text-gray-500">
+                                        No hay recibos registrados
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                        {/* Pie de tabla con el total */}
+                        {recibos.length > 0 && (
+                            <tfoot className="bg-gray-100 font-bold">
+                                <tr>
+                                    <td colSpan="3" className="p-3 text-right">
+                                        TOTAL GENERAL:
+                                    </td>
+                                    <td className="p-3 text-right">
                                         {new Intl.NumberFormat("es-CO", {
                                             style: "currency",
                                             currency: "COP",
                                             minimumFractionDigits: 0,
-                                        }).format(r.total_abonos || 0)}
+                                        }).format(
+                                            recibos.reduce(
+                                                (sum, c) => sum + (Number(c.total_abonos) || 0),
+                                                0
+                                            )
+                                        )}
                                     </td>
-                                    <td className="p-3 border text-center space-x-2">
-                                        <button
-                                            onClick={() => navigate(`/editar-recibo/${r.id}`)}
-                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition"
-                                        >
-                                            ✏️ Editar
-                                        </button>
-                                        <button
-                                            onClick={() => eliminarCotizacion(c.id)}
-                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition"
-                                        >
-                                            ❌ Eliminar
-                                        </button>
-                                        <button
-                                            onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/recibos/${r.id}/pdf`, "_blank")}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition"
-                                        >
-                                            📄 PDF
-                                        </button>
-                                    </td>
+                                    <td colSpan="2"></td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5" className="p-3 text-center text-gray-500">
-                                    No hay recibos registrados
-                                </td>
-                            </tr>
+                            </tfoot>
                         )}
-                    </tbody>
-                    {/* Pie de tabla con el total */}
-                    {recibos.length > 0 && (
-                        <tfoot className="bg-gray-100 font-bold">
-                            <tr>
-                                <td colSpan="3" className="p-3 text-right">
-                                    TOTAL GENERAL:
-                                </td>
-                                <td className="p-3 text-right">
-                                    {new Intl.NumberFormat("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                        minimumFractionDigits: 0,
-                                    }).format(
-                                        recibos.reduce(
-                                            (sum, c) => sum + (Number(c.total_abonos) || 0),
-                                            0
-                                        )
-                                    )}
-                                </td>
-                                <td colSpan="2"></td>
-                            </tr>
-                        </tfoot>
-                    )}
-                </table>
+                    </table>
+
+                </div>
+
+            ) : (<div className="text-center text-gray-500 py-10">
+                <p className="text-lg">🗓️ Ingresa un rango de fechas y presiona “Filtrar” para ver las cotizaciones.</p>
             </div>
-        </div>
+            )
+            }
+        </div >
     );
 }

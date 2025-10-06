@@ -250,7 +250,7 @@ export default function RecibosPage() {
                               rawValue ? parseInt(rawValue, 10) : ""
                             );
                           }}
-                          className="border rounded-lg px-2 py-1 w-32 text-right"
+                          className="border-2 border-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg px-2 py-1 w-32 text-right bg-white text-gray-800 shadow-sm"
                         />
                       </td>
                       <td className="p-3 text-center">

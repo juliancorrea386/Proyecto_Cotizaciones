@@ -8,11 +8,7 @@ export default function MovimientosPage() {
     const [cliente, setCliente] = useState("");
     const [numeroCotizacion, setNumeroCotizacion] = useState("");
     const [numeroRecibo, setNumeroRecibo] = useState("");
-
-    useEffect(() => {
-        fetchMovimientos();
-    }, []);
-
+    const [filtroAplicado, setFiltroAplicado] = useState(false);
 
     const fetchMovimientos = async (params = {}) => {
         try {
@@ -31,7 +27,7 @@ export default function MovimientosPage() {
         if (cliente) params.cliente = cliente;
         if (numeroCotizacion) params.numero_cotizacion = numeroCotizacion;
         if (numeroRecibo) params.numero_recibo = numeroRecibo;
-
+        setFiltroAplicado(true);
         fetchMovimientos(params);
     };
 
@@ -41,6 +37,7 @@ export default function MovimientosPage() {
         setCliente("");
         setNumeroCotizacion("");
         setNumeroRecibo("");
+        setFiltroAplicado(false);
         fetchMovimientos();
 
     };
@@ -116,6 +113,7 @@ export default function MovimientosPage() {
             </div>
 
             {/* Tabla */}
+            {filtroAplicado ? (
             <div className="overflow-x-auto shadow-md rounded-lg">
                 <table className="w-full border-collapse bg-white">
                     <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
@@ -188,6 +186,11 @@ export default function MovimientosPage() {
                     </tbody>
                 </table>
             </div>
+            ) : (
+                <div className="text-center text-gray-500 py-10">
+                    <p className="text-lg">🗓️ Ingresa un rango de fechas y presiona “Filtrar” para ver los movimientos.</p>
+                </div>
+            )}
         </div>
     );
 }
