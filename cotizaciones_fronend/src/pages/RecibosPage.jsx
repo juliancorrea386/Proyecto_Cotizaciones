@@ -93,7 +93,7 @@ export default function RecibosPage() {
       setClienteId("");
       setObservacion("");
       setAbonos([]);
-      setNumeroRecibo((num) => num + 1);
+      setNumeroRecibo((num) => Number(num) + 1);
       setCotizaciones([]);
     } catch (err) {
       console.error(err);

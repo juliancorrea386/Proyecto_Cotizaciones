@@ -51,7 +51,12 @@ router.get('/Numero', async (req, res) => {
     const [rows] = await db.query(
       'SELECT MAX(numero_recibo) AS mayor_numero FROM recibos;'
     );
-    res.json(rows[0]); // 👈 devuelve solo el objeto, no el array
+
+    const mayorNumero = rows[0].mayor_numero
+      ? Number(rows[0].mayor_numero)
+      : 0; // si no hay registros, devuelve 0
+
+    res.json({ mayor_numero: mayorNumero });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
