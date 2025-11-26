@@ -11,3 +11,8 @@ SET subtotal = cantidad * precio_venta;
 
 -- 4. Verificar que quedó bien
 DESCRIBE cotizacion_detalles;
+
+ALTER TABLE cotizaciones
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
