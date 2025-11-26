@@ -1,3 +1,4 @@
+// cotizaciones_backend/server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -35,7 +36,11 @@ app.use("/api/cartera", carteraRoutes);
 const municipiosRoutes = require('./routes/municipios');
 app.use('/api/municipios', municipiosRoutes);
 
+const syncRoutes = require("./routes/sync");
+app.use("/api/sync", syncRoutes);
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`API de clientes escuchando en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`API escuchando en http://0.0.0.0:${PORT}`);
 });
+

@@ -1,0 +1,13 @@
+ALTER TABLE cotizaciones
+ADD COLUMN observaciones TEXT AFTER saldo;
+
+-- 2. Agregar columna subtotal
+ALTER TABLE cotizacion_detalles 
+ADD COLUMN subtotal DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER precio_venta;
+
+-- 3. Actualizar subtotales existentes
+UPDATE cotizacion_detalles 
+SET subtotal = cantidad * precio_venta;
+
+-- 4. Verificar que quedó bien
+DESCRIBE cotizacion_detalles;

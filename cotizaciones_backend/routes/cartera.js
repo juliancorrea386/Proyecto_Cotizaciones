@@ -1,3 +1,4 @@
+// cotizaciones_backend/routes/cartera.js
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
