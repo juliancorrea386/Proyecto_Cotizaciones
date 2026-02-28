@@ -104,6 +104,8 @@ function Navbar() {
   );
 }
 
+
+
 function AppContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200">
