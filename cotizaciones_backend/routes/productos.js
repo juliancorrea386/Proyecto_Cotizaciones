@@ -41,6 +41,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
+
 // Crear producto
 router.post('/', async (req, res) => {
     const { nombre, precio_costo, precio_venta, iva, embalaje, stock, referencia } = req.body;
@@ -86,6 +88,31 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+router.put("/precio/:id", async (req, res) => {
+  try {
+    const { precio_venta } = req.body;
+
+    if (precio_venta == null) {
+      return res.status(400).json({ message: "El precio es obligatorio" });
+    }
+
+    const [result] = await pool.query(
+      "UPDATE productos SET precio_venta = ? WHERE id = ?",
+      [precio_venta, req.params.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    res.json({ message: "Precio actualizado correctamente" });
+
+  } catch (error) {
+    console.error("Error al actualizar precio:", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
 });
 
 module.exports = router;

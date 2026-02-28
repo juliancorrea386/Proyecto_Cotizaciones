@@ -1,0 +1,61 @@
+Julian2001_
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Admin1234';
+FLUSH PRIVILEGES;
+
+mysql -u root -p
+
+
+cd /home/opc/Proyecto_Cotizaciones/cotizaciones_fronend
+npm run build
+
+
+ALTER TABLE productos
+MODIFY COLUMN embalaje ENUM(
+  'Frasco','Galón','Bolsa','Unidad','Bidón','Bulto','Kilos','Caja',
+  'Bloque','Libra','Balde','Manga','CUBETA','Barra'
+);
+
+ALTER TABLE productos
+MODIFY COLUMN embalaje VARCHAR(20);
+
+nano /home/opc/Proyecto_Cotizaciones/cotizaciones_fronend/src/App.jsx
+
+
+
+cd Proyecto_Cotizaciones
+git checkout -- cotizaciones_fronend/src/App.jsx
+git pull
+
+git checkout -- cotizaciones_fronend/node_modules/.package-lock.json
+git checkout -- cotizaciones_fronend/package-lock.json
+git checkout -- cotizaciones_fronend/package.json
+
+cd cotizaciones_fronend
+npm run build
+
+sudo rm -rf /usr/share/nginx/html/*
+sudo cp -r dist/* /usr/share/nginx/html/
+sudo systemctl restart nginx
+
+pm2 stop cotizaciones-backend
+pm2 start cotizaciones-backend
+
+nano /home/opc/Proyecto_Cotizaciones/cotizaciones_backend/routes/clientes.js
+nano /home/opc/Proyecto_Cotizaciones/cotizaciones_backend/routes/movimientos.js
+
+nano /home/opc/Proyecto_Cotizaciones/cotizaciones_fronend/src/services/clientesService.js
+
+mysqldump -u root -p cotizaciones > respaldo.sql
+C:\Users\Proyecto_macagual\Documents\Ejercicios\Backups>mysql -u root -p cotizaciones < respaldo.sql
+
+
+select SUM(cantidad) from cotizacion_detalles 
+INNER JOIN cotizaciones c
+on cotizacion_id = c.id
+where producto_id=72 AND fecha ='2025-09-10';
+
+update cotizaciones
+set saldo = total,
+tipo_pago = 'credito'
+where numero_cotizacion = '5402';

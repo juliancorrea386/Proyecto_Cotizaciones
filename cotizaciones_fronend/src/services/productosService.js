@@ -15,6 +15,16 @@ const productosService = {
     }
   },
 
+  listarPrecios: async (params = {}) => {
+    try {
+      const res = await axios.get(API_URL, { params });
+      return res.data;
+    } catch (error) {
+      console.error("Error al obtener precios:", error);
+      return [];
+    }
+  },
+
   obtenerPorId: async (id) => {
     try {
       const res = await axios.get(`${API_URL}/${id}`);
@@ -42,6 +52,18 @@ const productosService = {
     } catch (error) {
       console.error(`Error al actualizar producto ${id}:`, error);
       return null;
+    }
+  },
+  actualizarPrecio: async (id, precio_venta) => {
+    try {
+      const res = await axios.put(
+        `${API_URL}/precio/${id}`,
+        { precio_venta }
+      );
+      return res.data;
+    } catch (error) {
+      console.error("Error al actualizar precio:", error);
+      throw error;
     }
   },
 

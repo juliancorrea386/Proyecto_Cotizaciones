@@ -16,46 +16,87 @@ import MovimientosPage from "./pages/MovimientosPage";
 import ReporteVentasPage from "./pages/ReporteVentasPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarteraPage from "./pages/CarteraPage";
+import PrecioPage from "./pages/PrecioPage"
 import { Navigate } from "react-router-dom";
 
 function Navbar() {
   const location = useLocation();
-  const links = [
-    { to: "/clientes", label: "Clientes" },
-    { to: "/productos", label: "Productos" },
-    { to: "/cotizaciones", label: "Cotizaciones" },
-    { to: "/lista-cotizaciones", label: "Lista Cotizaciones" },
-    { to: "/usuarios", label: "Usuarios" },
-    { to: "/reporte-inventario", label: "Reporte Inventario" },
-    { to: "/recibos", label: "Recibos" },
-    { to: "/lista-recibos", label: "Lista Recibos" },
-    { to: "/movimientos", label: "Movimientos" },
-    { to: "/reporte-ventas", label: "Reporte Ventas" },
-    { to: "/cartera", label: "Cartera" },
-  ];
+  const [openMenu, setOpenMenu] = React.useState(null);
+
+  const toggleMenu = (menu) => {
+    setOpenMenu(openMenu === menu ? null : menu);
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md px-6 py-3 flex items-center gap-3">
-      {links.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          className={`px-4 py-2 rounded-md transition-colors ${
-            location.pathname === link.to
-              ? "bg-blue-600 text-white shadow"
-              : "bg-gray-100 text-gray-700 hover:bg-blue-100"
-          }`}
-        >
-          {link.label}
-        </Link>
-      ))}
+    <nav className="sticky top-0 z-50 bg-white shadow-md px-6 py-3 flex items-center gap-6">
 
+      {/* LOGO */}
+      <h1 className="text-lg font-bold text-blue-600">Mi Sistema</h1>
+
+      {/* INVENTARIO */}
+      <div className="relative">
+        <button
+          onClick={() => toggleMenu("inventario")}
+          className="font-medium hover:text-blue-600"
+        >
+          Inventario ▾
+        </button>
+
+        {openMenu === "inventario" && (
+          <div className="absolute bg-white shadow-lg rounded mt-2 w-52">
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/productos">Productos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/precio">Actualizar Precio</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/movimientos">Movimientos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-inventario">Reporte Inventario</Link>
+          </div>
+        )}
+      </div>
+
+      {/* VENTAS */}
+      <div className="relative">
+        <button
+          onClick={() => toggleMenu("ventas")}
+          className="font-medium hover:text-blue-600"
+        >
+          Ventas ▾
+        </button>
+
+        {openMenu === "ventas" && (
+          <div className="absolute bg-white shadow-lg rounded mt-2 w-56">
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cotizaciones">Cotizaciones</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-cotizaciones">Lista Cotizaciones</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/recibos">Recibos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-recibos">Lista Recibos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-ventas">Reporte Ventas</Link>
+          </div>
+        )}
+      </div>
+
+      {/* ADMIN */}
+      <div className="relative">
+        <button
+          onClick={() => toggleMenu("admin")}
+          className="font-medium hover:text-blue-600"
+        >
+          Administración ▾
+        </button>
+
+        {openMenu === "admin" && (
+          <div className="absolute bg-white shadow-lg rounded mt-2 w-48">
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/clientes">Clientes</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/usuarios">Usuarios</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cartera">Cartera</Link>
+          </div>
+        )}
+      </div>
+
+      {/* BOTÓN CERRAR SESIÓN */}
       <button
         onClick={() => {
           localStorage.removeItem("token");
           window.location.href = "/login";
         }}
-        className="ml-auto bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-full shadow"
+        className="ml-auto bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full"
       >
         Cerrar sesión
       </button>
@@ -84,6 +125,7 @@ function AppContent() {
           <Route path="/movimientos" element={<MovimientosPage />} />
           <Route path="/reporte-ventas" element={<ReporteVentasPage />} />
           <Route path="/cartera" element={<CarteraPage />} />
+          <Route path="/precio" element={<PrecioPage />} />
         </Routes>
       </div>
     </div>
