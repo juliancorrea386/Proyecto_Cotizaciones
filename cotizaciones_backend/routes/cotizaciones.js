@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 router.get('/Numero', async (req, res) => {
     try {
         const [rows] = await pool.query(
-            'SELECT MAX(numero_cotizacion) AS mayor_numero FROM cotizaciones;'
+            'SELECT numero_cotizacion AS mayor_numero from cotizaciones order by id desc limit 1;'
         );
         res.json(rows[0]); // 👈 devuelve solo el objeto, no el array
     } catch (error) {

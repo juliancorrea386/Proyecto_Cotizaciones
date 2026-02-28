@@ -12,7 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const [[user]] = await db.query("SELECT * FROM usuarios WHERE username = ?", [username]);
-
   if (!user) return res.status(401).json({ error: "Usuario no encontrado" });
 
   const valid = await bcrypt.compare(password, user.password);

@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
 router.get('/Numero', async (req, res) => {
   try {
     const [rows] = await db.query(
-      'SELECT MAX(numero_recibo) AS mayor_numero FROM recibos;'
+      'SELECT numero_recibo AS mayor_numero FROM recibos order by id desc limit 1;'
     );
 
     const mayorNumero = rows[0].mayor_numero
@@ -109,7 +109,6 @@ router.get("/", async (req, res) => {
 
     const [rows] = await db.query(query, params);
     res.json(rows);
-    console.log(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error al listar recibos" });
