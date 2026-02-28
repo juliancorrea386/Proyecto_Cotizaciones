@@ -242,6 +242,16 @@ export default function RecibosPage() {
                               }).format(abono.valor)
                               : ""
                           }
+                          onKeyDown={(e) => {
+                            if (e.key.toLowerCase() === "d") {
+                              const cot = cotizaciones.find(
+                                (c) => c.id == abono.cotizacion_id
+                              );
+                              if (cot) {
+                                actualizarAbono(index, "valor", cot.saldo);
+                              }
+                            }
+                          }}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/\D/g, "");
                             actualizarAbono(
