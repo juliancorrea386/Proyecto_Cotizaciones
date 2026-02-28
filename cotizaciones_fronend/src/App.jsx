@@ -22,7 +22,10 @@ import { Navigate } from "react-router-dom";
 function Navbar() {
   const location = useLocation();
   const [openMenu, setOpenMenu] = React.useState(null);
-
+  
+  const closeMenu = () => {
+  setOpenMenu(null);
+};
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
@@ -38,16 +41,17 @@ function Navbar() {
         <button
           onClick={() => toggleMenu("inventario")}
           className="font-medium hover:text-blue-600"
+          
         >
           Inventario ▾
         </button>
 
         {openMenu === "inventario" && (
           <div className="absolute bg-white shadow-lg rounded mt-2 w-52">
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/productos">Productos</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/precio">Actualizar Precio</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/movimientos">Movimientos</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-inventario">Reporte Inventario</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/productos" onClick={closeMenu}>Productos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/precio" onClick={closeMenu}>Actualizar Precio</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/movimientos" onClick={closeMenu}>Movimientos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-inventario" onClick={closeMenu}>Reporte Inventario</Link>
           </div>
         )}
       </div>
@@ -63,11 +67,11 @@ function Navbar() {
 
         {openMenu === "ventas" && (
           <div className="absolute bg-white shadow-lg rounded mt-2 w-56">
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cotizaciones">Cotizaciones</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-cotizaciones">Lista Cotizaciones</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/recibos">Recibos</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-recibos">Lista Recibos</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-ventas">Reporte Ventas</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cotizaciones" onClick={closeMenu}>Cotizaciones</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-cotizaciones" onClick={closeMenu}>Lista Cotizaciones</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/recibos" onClick={closeMenu}>Recibos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/lista-recibos"onClick={closeMenu}>Lista Recibos</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/reporte-ventas"onClick={closeMenu}>Reporte Ventas</Link>
           </div>
         )}
       </div>
@@ -83,9 +87,9 @@ function Navbar() {
 
         {openMenu === "admin" && (
           <div className="absolute bg-white shadow-lg rounded mt-2 w-48">
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/clientes">Clientes</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/usuarios">Usuarios</Link>
-            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cartera">Cartera</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/clientes" onClick={closeMenu}>Clientes</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/usuarios" onClick={closeMenu}>Usuarios</Link>
+            <Link className="block px-4 py-2 hover:bg-gray-100" to="/cartera" onClick={closeMenu}>Cartera</Link>
           </div>
         )}
       </div>
