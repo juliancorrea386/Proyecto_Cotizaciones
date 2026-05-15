@@ -11,37 +11,17 @@ const ProductoForm = ({ producto, onSave, onClose }) => {
     stock: "",
   });
 
-  const [filtroIva, setFiltroIva] = useState("");
-  const [filtroEmbalaje, setFiltroEmbalaje] = useState("");
-  const iva = [
-    "0%",
-    "5%",
-    "19%",
-  ];
+  const ivaOpciones = ["0%", "5%", "19%"];
 
-  const embalaje = [
-    "Frasco",
-    "Galón",
-    "Bolsa",
-    "Unidad",
-    "Bidón",
-    "Bulto",
-    "Kilos",
-    "Caja",
-    "Bloque",
-    "Libra",
-    "Balde",
-    "Manga",
-    "CUBETA",
-    "Barra"
+  const embalajeOpciones = [
+    "Frasco", "Galón", "Bolsa", "Unidad", "Bidón", "Bulto",
+    "Kilos", "Caja", "Bloque", "Libra", "Balde", "Manga",
+    "CUBETA", "Barra",
   ];
-
 
   useEffect(() => {
     if (producto) {
       setFormData(producto);
-      setFiltroIva(""); // Resetea búsqueda al editar
-      setFiltroEmbalaje(""); // Resetea búsqueda al editar
     }
   }, [producto]);
 
@@ -55,109 +35,148 @@ const ProductoForm = ({ producto, onSave, onClose }) => {
     onSave(formData);
   };
 
-  const IvaFiltrados = iva.filter((m) =>
-    m.toLowerCase().includes(filtroIva.toLowerCase())
-  );
-
-  const EmbalajeFiltrados = embalaje.filter((m) =>
-    m.toLowerCase().includes(filtroEmbalaje.toLowerCase())
-  );
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-96">
-        <h2 className="text-xl font-bold mb-4">
-          {producto ? "Editar Producto" : "Nuevo Producto"}
-        </h2>
-        <form onSubmit={handleSubmit}>
+    /* Overlay */
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end sm:items-center z-50 px-0 sm:px-4">
+      {/* Panel: ocupa toda la pantalla en móvil, modal centrado en sm+ */}
+      <div className="bg-white w-full sm:max-w-md sm:rounded-lg rounded-t-2xl shadow-xl flex flex-col max-h-[92vh]">
 
-          <input
-            type="text"
-            name="Referencia"
-            value={formData.Referencia}
-            onChange={handleChange}
-            placeholder="Referencia"
-            className="border p-2 w-full mb-2"
-            required
-          />
-          <input
-            type="text"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            placeholder="Nombre"
-            className="border p-2 w-full mb-2"
-            required
-          />
-          <input
-            type="text"
-            name="precio_costo"
-            value={formData.precio_costo}
-            onChange={handleChange}
-            placeholder="Precio Costo"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="precio_venta"
-            value={formData.precio_venta}
-            onChange={handleChange}
-            placeholder="Precio Venta"
-            className="border p-2 w-full mb-2"
-          />
-          {/* Select de iva */}
-          <select
-            name="iva"
-            value={formData.iva}
-            onChange={handleChange}
-            className="border p-2 w-full mb-2"
+        {/* Cabecera */}
+        <div className="flex items-center justify-between px-5 py-4 border-b">
+          <h2 className="text-lg font-bold text-gray-800">
+            {producto ? "Editar Producto" : "Nuevo Producto"}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            aria-label="Cerrar"
           >
-            <option value="">Seleccione Iva</option>
-            {IvaFiltrados.map((m, i) => (
-              <option key={i} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          {/* Select de embalaje */}
-          <select
-            name="embalaje"
-            value={formData.embalaje}
-            onChange={handleChange}
-            className="border p-2 w-full mb-2"
-          >
-            <option value="">Seleccione embalaje</option>
-            {EmbalajeFiltrados.map((m, i) => (
-              <option key={i} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
+            ×
+          </button>
+        </div>
 
-          <input
-            type="text"
-            name="stock"
-            value={formData.stock}
-            onChange={handleChange}
-            placeholder="stock"
-            className="border p-2 w-full mb-2"
-          />
-          <div className="flex justify-end mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-400 text-white px-4 py-2 rounded mr-2"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Guardar
-            </button>
+        {/* Formulario scrollable */}
+        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Referencia *</label>
+            <input
+              type="text"
+              name="Referencia"
+              value={formData.Referencia}
+              onChange={handleChange}
+              placeholder="Ej: PROD-001"
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <input
+              type="text"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              placeholder="Nombre del producto"
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+
+          {/* Precios en fila */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Costo</label>
+              <input
+                type="number"
+                name="precio_costo"
+                value={formData.precio_costo}
+                onChange={handleChange}
+                placeholder="0"
+                min="0"
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Precio Venta</label>
+              <input
+                type="number"
+                name="precio_venta"
+                value={formData.precio_venta}
+                onChange={handleChange}
+                placeholder="0"
+                min="0"
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* IVA y Stock en fila */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">IVA</label>
+              <select
+                name="iva"
+                value={formData.iva}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+              >
+                <option value="">Seleccione</option>
+                {ivaOpciones.map((m, i) => (
+                  <option key={i} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+              <input
+                type="number"
+                name="stock"
+                value={formData.stock}
+                onChange={handleChange}
+                placeholder="0"
+                min="0"
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Embalaje</label>
+            <select
+              name="embalaje"
+              value={formData.embalaje}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+            >
+              <option value="">Seleccione embalaje</option>
+              {embalajeOpciones.map((m, i) => (
+                <option key={i} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+
         </form>
+
+        {/* Pie fijo con botones */}
+        <div className="px-5 py-4 border-t flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 rounded-lg transition text-sm"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg transition text-sm"
+          >
+            Guardar
+          </button>
+        </div>
       </div>
     </div>
   );
