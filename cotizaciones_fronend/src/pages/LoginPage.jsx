@@ -13,12 +13,14 @@ export default function LoginPage() {
 
         try {
             const res = await authService.login(username, password);
-
+            localStorage.setItem("user_id", res.id);
+            localStorage.setItem("username", res.username);
+            localStorage.setItem("role", res.role);
             // Redirigir según rol
             if (res.role === "admin") {
                 navigate("/cotizaciones");
             } else {
-                navigate("/clientes"); // 👈 si ambos van a la misma
+                navigate("/cotizaciones"); // 👈 si ambos van a la misma
             }
 
         } catch (err) {
